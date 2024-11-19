@@ -45,8 +45,14 @@ const config = {
   },
   submenuLinks: [
     {
-      uriPath: 'data-sources',
-      defaultLabel: 'Datasources',
+      uriPath: '',
+      defaultLabel: 'Report it',
+      labelAllLocales: [],
+      permissions: [PERMISSIONS.View],
+    },
+    {
+      uriPath: 'configuration',
+      defaultLabel: 'Configure Report It',
       labelAllLocales: [],
       permissions: [PERMISSIONS.View],
     },
