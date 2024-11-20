@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 const StyledNav = styled.nav`
   display: flex;
+  align-items: center;
 `;
 
 const StyledWrapper = styled.div`

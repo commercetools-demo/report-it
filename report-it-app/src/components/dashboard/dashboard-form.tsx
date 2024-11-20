@@ -1,12 +1,11 @@
-import React from 'react';
-import { DashboardCustomObject } from '../../types/dashboard';
-import { Form, Formik } from 'formik';
-import Spacings from '@commercetools-uikit/spacings';
+import Grid from '@commercetools-uikit/grid';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
-import Grid from '@commercetools-uikit/grid';
-import TextField from '@commercetools-uikit/text-field';
+import Spacings from '@commercetools-uikit/spacings';
 import Text from '@commercetools-uikit/text';
+import TextField from '@commercetools-uikit/text-field';
+import { Form, Formik } from 'formik';
+import { DashboardCustomObject } from '../../types/dashboard';
 
 type Props = {
   onSubmit: (dashbaord: DashboardCustomObject) => Promise<void>;

@@ -1,22 +1,22 @@
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import {
-  Drawer,
-  useModalState,
+    Drawer,
+    useModalState,
 } from '@commercetools-frontend/application-components';
 import {
-  NOTIFICATION_DOMAINS,
-  NOTIFICATION_KINDS_SIDE,
+    NOTIFICATION_DOMAINS,
+    NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
 import { useState } from 'react';
 import { DashboardCustomObject } from '../../types/dashboard';
 import { DashboardTabPanel } from '../dashboard-tab-panel';
 import { TabPanels } from '../tab/panels';
+import { TabContext } from '../tab/tab-context';
 import { Tabs } from '../tab/tabs';
 import DashbaordForm from './dashboard-form';
 import DashboardTabButton from './dashboard-tab-button';
-import NewDashboard from './new-dashboard';
+import NewDashboardButton from './new-dashboard-button';
 import { useDashboardsStateContext } from './provider';
-import { TabContext } from '../tab/tab-context';
 const DashboardTabView = () => {
   const { isLoading, dashboards } = useDashboardsStateContext();
   const [selectedDashboard, setSelectedDashboard] =
@@ -68,7 +68,7 @@ const DashboardTabView = () => {
             <Tabs
               selectedTab={selectedTab}
               setSelectedTab={setSelectedTab}
-              additionalComponent={<NewDashboard openModal={openModal} />}
+              additionalComponent={<NewDashboardButton openModal={openModal} />}
             >
               {dashboards?.map((dashboard) => (
                 <DashboardTabButton

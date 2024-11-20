@@ -1,8 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { TabContent } from '../tab';
-import { DashboardsProvider } from './provider';
 import DashboardTabView from './dashboard-tabs';
+import { DashboardsProvider } from './provider';
 
 type Props = {
   linkToParent: string;
