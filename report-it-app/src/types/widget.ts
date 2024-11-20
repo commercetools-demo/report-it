@@ -23,8 +23,8 @@ export interface WidgetRef {
 }
 
 export interface WidgetResponse {
-    id: string;
-    createdAt: string;
-    key: string;
-    value?: Widget;
-  }
+  id: string;
+  createdAt: string;
+  key: string;
+  value?: Widget;
+}

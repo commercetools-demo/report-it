@@ -97,9 +97,10 @@ export const useDashboard = () => {
 
   const updateDashboard = async (
     dashboardKey: string,
+    name?: string,
     widgets?: WidgetRef[]
   ): Promise<DashboardResponse> => {
-    if (!dashboardKey || !widgets) {
+    if (!dashboardKey) {
       return {} as DashboardResponse;
     }
     const result = await getDashboard(dashboardKey).then((ds) => {
@@ -112,7 +113,8 @@ export const useDashboard = () => {
             key: dashboardKey,
             value: {
               ...ds.value,
-              widgets,
+              ...(name && { name }),
+              ...(widgets && { widgets }),
             },
           } as DashboardCustomObjectDraft,
         })

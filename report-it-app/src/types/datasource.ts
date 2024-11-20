@@ -1,4 +1,3 @@
-
 export type Datasource = {
   id: string;
   name: string;
@@ -8,7 +7,6 @@ export type Datasource = {
     variableBindings: Record<string, any>;
   };
 };
-
 
 export type DatasourceDraft = {
   id: string;

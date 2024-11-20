@@ -6,4 +6,3 @@ export const entryPointUriPath = 'report-it';
 export const PERMISSIONS = entryPointUriPathToPermissionKeys(entryPointUriPath);
 
 export const APP_NAME = 'REPORT_IT';
-

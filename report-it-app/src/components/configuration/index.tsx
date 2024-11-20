@@ -1,13 +1,11 @@
-import React from 'react'
+import React from 'react';
 
 type Props = {
-    linkToParent: string
-}
+  linkToParent: string;
+};
 
 const Configuration = (props: Props) => {
-  return (
-    <div>Configuration</div>
-  )
-}
+  return <div>Configuration</div>;
+};
 
-export default Configuration
+export default Configuration;

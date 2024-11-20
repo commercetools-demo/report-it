@@ -1,13 +1,11 @@
-import React from 'react'
+import React from 'react';
 
 type Props = {
-  linkToParent: string
-}
+  linkToParent: string;
+};
 
 const ChartConfiguration = (props: Props) => {
-  return (
-    <div>ChartConfiguration</div>
-  )
-}
+  return <div>ChartConfiguration</div>;
+};
 
-export default ChartConfiguration
+export default ChartConfiguration;

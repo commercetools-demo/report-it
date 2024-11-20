@@ -1,18 +1,21 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { TabContent } from '../tab';
+import { DashboardsProvider } from './provider';
+import DashboardTabView from './dashboard-tabs';
 
 type Props = {
-    linkToParent: string
-}
+  linkToParent: string;
+};
 
-const Dashboard = ({linkToParent}: Props) => {
+const Dashboard = ({ linkToParent }: Props) => {
   return (
-    <div>
-        <p>Dashboard</p>
-        <Link to={`${linkToParent}/configuration`}>Configuration</Link>
+    <DashboardsProvider>
+      <p>Dashboard</p>
+      <Link to={`${linkToParent}/configuration`}>Configuration</Link>
+      <DashboardTabView />
+    </DashboardsProvider>
+  );
+};
 
-    </div>
-  )
-}
-
-export default Dashboard
+export default Dashboard;
