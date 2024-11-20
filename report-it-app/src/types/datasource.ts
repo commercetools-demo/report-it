@@ -26,5 +26,5 @@ export interface DatasourceResponse {
 
 export type DatasourceRef = {
   key: string;
-  typeId: 'datasource';
+  typeId: 'custom-object';
 };
