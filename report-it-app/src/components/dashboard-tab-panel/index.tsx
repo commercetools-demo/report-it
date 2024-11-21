@@ -1,9 +1,15 @@
-import React from 'react';
+import { DashboardCustomObject } from '../../types/dashboard';
+import DashboardGridWrapper from '../dashboard-grid/dashboard-grid-wrapper';
+import { DashboardPanelProvider } from './provider';
 
 type Props = {
-  dashboardKey: string;
+  dashboard: DashboardCustomObject;
 };
 
-export const DashboardTabPanel = ({ dashboardKey }: Props) => {
-  return <div>DashboardTab dashboardKey: {dashboardKey}</div>;
+export const DashboardTabPanel = ({ dashboard }: Props) => {
+  return (
+    <DashboardPanelProvider dashboard={dashboard}>
+      <DashboardGridWrapper />
+    </DashboardPanelProvider>
+  );
 };

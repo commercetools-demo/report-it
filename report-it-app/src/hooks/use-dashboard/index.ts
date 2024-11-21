@@ -1,20 +1,19 @@
+import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
+import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
 import {
-  useAsyncDispatch,
   actions,
   TSdkAction,
+  useAsyncDispatch,
 } from '@commercetools-frontend/sdk';
-import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
-import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { APP_NAME } from '../../constants';
-import uniqueId from 'lodash/uniqueId';
 import { PagedQueryResponse } from '../../types/general';
 
-import { buildUrlWithParams } from '../../utils/utils';
 import {
   DashboardCustomObjectDraft,
   DashboardResponse,
 } from '../../types/dashboard';
-import { Widget, WidgetRef } from '../../types/widget';
+import { WidgetRef } from '../../types/widget';
+import { buildUrlWithParams, uniqueId } from '../../utils/utils';
 
 const CONTAINER = `${APP_NAME}_dashboards`;
 const DASHBOARD_KEY_PREFIX = 'dashboard-';

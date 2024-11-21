@@ -6,16 +6,23 @@ import {
 import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { APP_NAME } from '../../constants';
-import uniqueId from 'lodash/uniqueId';
 import { Widget, WidgetResponse } from '../../types/widget';
+import { buildUrlWithParams, uniqueId } from '../../utils/utils';
+import { PagedQueryResponse } from '../../types/general';
+import { useDashboard } from '../use-dashboard';
 
 const CONTAINER = `${APP_NAME}_widgets`;
 const WIDGET_KEY_PREFIX = 'widget-';
 
 export const useWidget = () => {
+  const { getDashboard } = useDashboard();
   const context = useApplicationContext((context) => context);
 
   const dispatchAppsAction = useAsyncDispatch<TSdkAction, WidgetResponse>();
+  const dispatchAppsRead = useAsyncDispatch<
+    TSdkAction,
+    PagedQueryResponse<WidgetResponse>
+  >();
 
   const createWidget = async (payload: Widget): Promise<WidgetResponse> => {
     const key = uniqueId(WIDGET_KEY_PREFIX);
@@ -61,7 +68,29 @@ export const useWidget = () => {
     return result;
   };
 
-  const updateWdiget = async (
+  const getWidgets = async (
+    dashboardKey: string
+  ): Promise<WidgetResponse[]> => {
+    if (!dashboardKey) {
+      return [] as WidgetResponse[];
+    }
+    const dashboard = await getDashboard(dashboardKey);
+    const widgetKeys = dashboard?.value?.widgets?.map((w) => w.key) || [];
+    const result = await dispatchAppsRead(
+      actions.get({
+        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+        uri: buildUrlWithParams(
+          `/${context?.project?.key}/custom-objects/${CONTAINER}`,
+          {
+            where: `key in (${widgetKeys.map((key) => `"${key}"`).join(',')})`,
+          }
+        ),
+      })
+    );
+    return result?.results;
+  };
+
+  const updateWidget = async (
     widgetKey: string,
     widget?: Widget
   ): Promise<WidgetResponse> => {
@@ -78,7 +107,7 @@ export const useWidget = () => {
             key: widgetKey,
             value: {
               ...ds.value,
-              widget,
+              ...widget,
             } as Widget,
           },
         })
@@ -91,6 +120,7 @@ export const useWidget = () => {
     createWidget,
     deleteWidget,
     getWidget,
-    updateWdiget,
+    getWidgets,
+    updateWidget,
   };
 };

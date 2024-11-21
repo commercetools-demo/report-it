@@ -17,3 +17,7 @@ export const buildUrlWithParams = (
 
   return `${baseUrl}?${queryParams}`;
 };
+
+export const uniqueId = (prefix: string) => {
+  return `${prefix}-${Date.now()}`;
+};

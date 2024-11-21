@@ -1,11 +1,11 @@
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import {
-    Drawer,
-    useModalState,
+  Drawer,
+  useModalState,
 } from '@commercetools-frontend/application-components';
 import {
-    NOTIFICATION_DOMAINS,
-    NOTIFICATION_KINDS_SIDE,
+  NOTIFICATION_DOMAINS,
+  NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
 import { useState } from 'react';
 import { DashboardCustomObject } from '../../types/dashboard';
@@ -81,8 +81,8 @@ const DashboardTabView = () => {
             <TabPanels selectedTab={selectedTab}>
               {dashboards?.map((dashboard) => (
                 <DashboardTabPanel
-                  dashboardKey={dashboard.key}
-                  key={dashboard.id}
+                  dashboard={dashboard}
+                  key={dashboard.key}
                 ></DashboardTabPanel>
               ))}
             </TabPanels>
@@ -90,7 +90,7 @@ const DashboardTabView = () => {
         )}
       </TabContext>
       <Drawer
-        title="Add new datasource"
+        title={selectedDashboard ? 'Edit dashboard' : 'Add new dashboard'}
         isOpen={drawerState.isModalOpen}
         onClose={drawerState.closeModal}
         hideControls
