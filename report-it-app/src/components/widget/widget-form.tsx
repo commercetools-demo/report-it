@@ -9,6 +9,7 @@ import { Widget } from '../../types/widget';
 
 type Props = {
   onSubmit: (widget: Widget) => Promise<void>;
+  onDelete: () => void;
   onCancel: () => void;
   widget?: Widget;
 };
@@ -16,6 +17,7 @@ type Props = {
 const WidgetForm = ({
   onCancel,
   onSubmit,
+  onDelete,
   widget = {
     layout: {
       h: 1,
@@ -81,6 +83,20 @@ const WidgetForm = ({
               )}
             </Grid.Item>
           </Grid>
+          <div style={{ paddingTop: '16px' }}>
+            <Spacings.Inline
+              alignItems="center"
+              justifyContent="flex-end"
+              scale="m"
+            >
+              <PrimaryButton
+                label="Delete"
+                tone="critical"
+                onClick={onDelete}
+                type="button"
+              />
+            </Spacings.Inline>
+          </div>
         </Form>
       )}
     </Formik>

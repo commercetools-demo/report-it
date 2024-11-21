@@ -1,5 +1,6 @@
 import {
   Drawer,
+  ConfirmationDialog,
   useModalState,
 } from '@commercetools-frontend/application-components';
 import styled from 'styled-components';
@@ -14,6 +15,7 @@ import {
   NOTIFICATION_DOMAINS,
   NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
+import Text from '@commercetools-uikit/text';
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -22,6 +24,7 @@ const StyledWrapper = styled.div`
 
 const DashboardGridWrapper = () => {
   const drawerState = useModalState();
+  const confirmState = useModalState();
   const [selectedWidget, setSelectedWidget] = useState<WidgetResponse | null>();
   const showNotification = useShowNotification();
 
@@ -56,14 +59,27 @@ const DashboardGridWrapper = () => {
     drawerState.closeModal();
   };
 
-  const handleDeleteWidget = async (widgetKey: string) => {
-    await removeWidget?.(widgetKey);
+  const handleDeleteConfirmation = () => {
+    if (!selectedWidget) {
+      return;
+    }
+
+    confirmState.openModal();
+  };
+
+  const handleDeleteWidget = async () => {
+    if (!selectedWidget) {
+      return;
+    }
+    await removeWidget?.(selectedWidget.key);
     showNotification({
       domain: NOTIFICATION_DOMAINS.SIDE,
       kind: NOTIFICATION_KINDS_SIDE.success,
       text: 'Widget deleted successfully',
     });
     await refresh();
+    drawerState.closeModal();
+    confirmState.closeModal();
   };
 
   return (
@@ -81,11 +97,20 @@ const DashboardGridWrapper = () => {
       >
         <WidgetForm
           onSubmit={handleCreateWidget}
-          onDelete={handleDeleteWidget}
+          onDelete={handleDeleteConfirmation}
           onCancel={drawerState.closeModal}
           widget={selectedWidget?.value ?? undefined}
         />
       </Drawer>
+      <ConfirmationDialog
+        isOpen={confirmState.isModalOpen}
+        onClose={confirmState.closeModal}
+        onConfirm={handleDeleteWidget}
+        title="Delete widget"
+        onCancel={confirmState.closeModal}
+      >
+        <Text.Body>Are you sure you want to delete this widget?</Text.Body>
+      </ConfirmationDialog>
     </>
   );
 };
