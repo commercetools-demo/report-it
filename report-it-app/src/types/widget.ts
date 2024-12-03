@@ -13,7 +13,7 @@ export interface Widget {
   name: string;
   config?: {
     [key: string]: any;
-    datasource: DatasourceRef;
+    datasources: DatasourceRef[];
   };
   layout: WidgetLayout;
 }

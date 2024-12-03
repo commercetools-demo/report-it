@@ -5,8 +5,8 @@ import {
 import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import DatasourceForm from '../datasource-form';
-import { useDatasource } from '../../../../../hooks/use-datasource';
-import { DatasourceDraft } from '../../../../../types/datasource';
+import { useDatasource } from '../../../hooks/use-datasource';
+import { DatasourceDraft } from '../../../types/datasource';
 
 const NewDatasource = () => {
   const drawerState = useModalState();

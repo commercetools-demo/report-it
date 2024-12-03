@@ -6,14 +6,13 @@ import {
 import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { APP_NAME } from '../../constants';
-import uniqueId from 'lodash/uniqueId';
 import { PagedQueryResponse } from '../../types/general';
 import {
   Datasource,
   DatasourceDraft,
   DatasourceResponse,
 } from '../../types/datasource';
-import { buildUrlWithParams } from '../../utils/utils';
+import { buildUrlWithParams, uniqueId } from '../../utils/utils';
 
 const CONTAINER = `${APP_NAME}_datasources`;
 const DATASOURCES_KEY_PREFIX = 'datasource-';

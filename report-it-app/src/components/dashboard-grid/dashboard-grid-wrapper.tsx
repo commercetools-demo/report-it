@@ -50,14 +50,16 @@ const DashboardGridWrapper = () => {
 
   const handleCreateWidget = async (widget: Widget) => {
     if (selectedWidget) {
-      await updateWidget?.(selectedWidget.key, widget);
+      const result = await updateWidget?.(selectedWidget.key, widget);
       showNotification({
         domain: NOTIFICATION_DOMAINS.SIDE,
         kind: NOTIFICATION_KINDS_SIDE.success,
         text: 'Widget updated successfully',
       });
       await refresh();
-      drawerState.closeModal();
+      if (result) {
+        setSelectedWidget(result);
+      }
     } else {
       const result = await addWidget?.(widget);
       showNotification({
