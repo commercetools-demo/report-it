@@ -16,6 +16,7 @@ import {
   NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
 import Text from '@commercetools-uikit/text';
+import { useEasyParams } from '../../hooks/use-params';
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -23,20 +24,28 @@ const StyledWrapper = styled.div`
 `;
 
 const DashboardGridWrapper = () => {
-  const drawerState = useModalState();
-  const confirmState = useModalState();
-  const [selectedWidget, setSelectedWidget] = useState<WidgetResponse | null>();
-  const showNotification = useShowNotification();
-
-  const { widgets, addWidget, updateWidget, removeWidget, refresh } =
+  const { addWidget, updateWidget, removeWidget, refresh, findWidget } =
     useDashboardPanelStateContext();
+  const confirmState = useModalState();
+  const showNotification = useShowNotification();
+  const { setParam, clearParam, getParam } = useEasyParams();
+  const [selectedWidget, setSelectedWidget] = useState<WidgetResponse | null>(
+    findWidget(getParam('widgetKey'))
+  );
+  const drawerState = useModalState();
 
   const openModal = (widgetKey?: string) => {
-    setSelectedWidget(
-      !widgetKey ? null : widgets?.find((d) => d.key === widgetKey)
-    );
+    if (widgetKey) {
+      setParam('widgetKey', widgetKey);
+    }
+    setSelectedWidget(findWidget(widgetKey));
 
     drawerState.openModal();
+  };
+
+  const closeModal = () => {
+    drawerState.closeModal();
+    clearParam('widgetKey');
   };
 
   const handleCreateWidget = async (widget: Widget) => {
@@ -56,7 +65,7 @@ const DashboardGridWrapper = () => {
       });
     }
     await refresh();
-    drawerState.closeModal();
+    closeModal();
   };
 
   const handleDeleteConfirmation = () => {
@@ -91,14 +100,14 @@ const DashboardGridWrapper = () => {
       <Drawer
         title={selectedWidget ? 'Edit widget' : 'Add widget'}
         isOpen={drawerState.isModalOpen}
-        onClose={drawerState.closeModal}
+        onClose={closeModal}
         hideControls
         size={10}
       >
         <WidgetForm
           onSubmit={handleCreateWidget}
           onDelete={handleDeleteConfirmation}
-          onCancel={drawerState.closeModal}
+          onCancel={closeModal}
           widget={selectedWidget?.value ?? undefined}
         />
       </Drawer>

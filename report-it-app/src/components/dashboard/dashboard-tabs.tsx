@@ -62,7 +62,7 @@ const DashboardTabView = () => {
   };
   return (
     <>
-      <TabContext defaultTab={0}>
+      <TabContext defaultTab={0} paramName="dashboard">
         {({ selectedTab, setSelectedTab }) => (
           <>
             <Tabs

@@ -1,4 +1,4 @@
-import { Context, createContext, useContext, useEffect, useState } from 'react';
+import { Context, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useDashboard } from '../../hooks/use-dashboard';
 import { useWidget } from '../../hooks/use-widget';
 import { DashboardCustomObject } from '../../types/dashboard';
@@ -11,6 +11,7 @@ interface ContextShape {
   updateWidget: (widgetKey: string, widget?: Widget) => Promise<void>;
   removeWidget: (widgetKey: string) => Promise<void>;
   refresh: () => Promise<void>;
+  findWidget: (widgetKey?: string | null) => WidgetResponse | null;
 }
 
 const DashboardPanelStateContext: Context<ContextShape> =
@@ -21,6 +22,7 @@ const DashboardPanelStateContext: Context<ContextShape> =
     updateWidget: () => Promise.resolve(),
     removeWidget: () => Promise.resolve(),
     refresh: () => Promise.resolve(),
+    findWidget: () => null,
   });
 
 export const DashboardPanelProvider = ({
@@ -67,6 +69,10 @@ export const DashboardPanelProvider = ({
     setIsLoading(false);
   };
 
+  const findWidget = useCallback((widgetKey?: string | null): WidgetResponse | null => {
+    return widgetKey ? widgets?.find((w) => w.key === widgetKey) || null : null;
+  }, [widgets]);
+
   useEffect(() => {
     fetchWidgets();
   }, []);
@@ -74,6 +80,7 @@ export const DashboardPanelProvider = ({
     <DashboardPanelStateContext.Provider
       value={{
         widgets,
+        findWidget,
         addWidget,
         updateWidget: update,
         refresh: fetchWidgets,
