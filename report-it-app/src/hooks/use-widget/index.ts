@@ -76,6 +76,9 @@ export const useWidget = () => {
     }
     const dashboard = await getDashboard(dashboardKey);
     const widgetKeys = dashboard?.value?.widgets?.map((w) => w.key) || [];
+    if (!widgetKeys?.length) {
+      return [] as WidgetResponse[];
+    }
     const result = await dispatchAppsRead(
       actions.get({
         mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
