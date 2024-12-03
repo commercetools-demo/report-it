@@ -1,7 +1,6 @@
 import { Context, createContext, useContext, useEffect, useState } from 'react';
-import { useDebounce } from '../../hooks/use-debounce';
-import { DashboardCustomObject } from '../../types/dashboard';
 import { useDashboard } from '../../hooks/use-dashboard';
+import { DashboardCustomObject } from '../../types/dashboard';
 
 interface ContextShape {
   dashboards?: DashboardCustomObject[];
