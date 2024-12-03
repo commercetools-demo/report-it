@@ -9,7 +9,7 @@ import NewWidgetButton from '../widget/new-widget-button';
 import { useState } from 'react';
 import { Widget, WidgetResponse } from '../../types/widget';
 import { useDashboardPanelStateContext } from '../dashboard-tab-panel/provider';
-import WidgetForm from '../widget/widget-form';
+import WidgetForm from '../widget-form';
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 import {
   NOTIFICATION_DOMAINS,
@@ -56,16 +56,21 @@ const DashboardGridWrapper = () => {
         kind: NOTIFICATION_KINDS_SIDE.success,
         text: 'Widget updated successfully',
       });
+      await refresh();
+      drawerState.closeModal();
     } else {
-      await addWidget?.(widget);
+      const result = await addWidget?.(widget);
       showNotification({
         domain: NOTIFICATION_DOMAINS.SIDE,
         kind: NOTIFICATION_KINDS_SIDE.success,
         text: 'Widget created successfully',
       });
+      await refresh();
+
+      if (result) {
+        setSelectedWidget(result);
+      }
     }
-    await refresh();
-    closeModal();
   };
 
   const handleDeleteConfirmation = () => {

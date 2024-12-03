@@ -7,7 +7,7 @@ import { Widget, WidgetResponse } from '../../types/widget';
 interface ContextShape {
   widgets?: WidgetResponse[];
   isLoading: boolean;
-  addWidget: (widget?: Widget) => Promise<void>;
+  addWidget: (widget?: Widget) => Promise<WidgetResponse | undefined>;
   updateWidget: (widgetKey: string, widget?: Widget) => Promise<void>;
   removeWidget: (widgetKey: string) => Promise<void>;
   refresh: () => Promise<void>;
@@ -18,7 +18,7 @@ const DashboardPanelStateContext: Context<ContextShape> =
   createContext<ContextShape>({
     widgets: [],
     isLoading: false,
-    addWidget: () => Promise.resolve(),
+    addWidget: () => Promise.resolve(undefined),
     updateWidget: () => Promise.resolve(),
     removeWidget: () => Promise.resolve(),
     refresh: () => Promise.resolve(),
@@ -35,7 +35,7 @@ export const DashboardPanelProvider = ({
   const { updateDashboard } = useDashboard();
   const { createWidget, updateWidget, deleteWidget } = useWidget();
 
-  const addWidget = async (widget?: Widget): Promise<void> => {
+  const addWidget = async (widget?: Widget): Promise<WidgetResponse | undefined> => {
     if (!widget) {
       return;
     }
@@ -48,6 +48,7 @@ export const DashboardPanelProvider = ({
         typeId: 'custom-object',
       },
     ]);
+    return result;
   };
   const removeWidget = async (widgetKey: string): Promise<void> => {
     if (!widgetKey) {
