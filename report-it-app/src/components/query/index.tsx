@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { FormikErrors } from 'formik';
 import { Widget } from '../../types/widget';
-import { useWidgetDatasourceResponseContext } from '../widget-form/widget-datasource-response-provider';
 import { useQueryUtils } from './hooks/use-query-utils';
-import { SchemaView } from './schema-view';
 import { TablePreview } from './table-preview';
 import Previews from './previews';
+import PrimaryButton from '@commercetools-uikit/primary-button';
 
 // Styled Components
 const Container = styled.div`
@@ -48,25 +47,6 @@ const QueryTextarea = styled.textarea`
   }
 `;
 
-const Button = styled.button`
-  background-color: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #2563eb;
-  }
-
-  &:active {
-    background-color: #1d4ed8;
-  }
-`;
-
 const Alert = styled.div`
   background-color: #fee2e2;
   border: 1px solid #fecaca;
@@ -90,8 +70,7 @@ type Props = {
 
 export const PREVIEW_ROWS = 5;
 
-const WidgetQuery: React.FC<Props> = () => {
-  const [query, setQuery] = useState('');
+const WidgetQuery: React.FC<Props> = ({ handleChange, values }) => {
   const { executeQuery, queryResult, error } = useQueryUtils();
 
   return (
@@ -106,13 +85,17 @@ const WidgetQuery: React.FC<Props> = () => {
       <Card>
         <CardTitle>SQL Query Editor</CardTitle>
         <QueryTextarea
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={values.config?.sqlQuery}
+          name="config.sqlQuery"
+          onChange={handleChange}
           placeholder="Enter your SQL query here..."
         />
-        <Button type="button" onClick={() => executeQuery(query)}>
-          Execute Query
-        </Button>
+        <PrimaryButton
+          label="Execute Query"
+          type="button"
+          isDisabled={!values.config?.sqlQuery}
+          onClick={() => executeQuery(values.config?.sqlQuery!)}
+        ></PrimaryButton>
       </Card>
 
       {/* Results Section */}

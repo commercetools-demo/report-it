@@ -1,5 +1,5 @@
 import CollapsibleMotion from '@commercetools-uikit/collapsible-motion';
-import PrimaryButton from '@commercetools-uikit/secondary-button';
+import SecondaryButton from '@commercetools-uikit/secondary-button';
 import styled from 'styled-components';
 import { useWidgetDatasourceResponseContext } from '../widget-form/widget-datasource-response-provider';
 import { useQueryUtils } from './hooks/use-query-utils';
@@ -18,7 +18,7 @@ const CollapsibleWrapper = styled.div`
   margin-bottom: 1rem;
 `;
 
-const Previews = (props: Props) => {
+const Previews = () => {
   const { datasources } = useWidgetDatasourceResponseContext();
   const { getSchema } = useQueryUtils();
   return (
@@ -27,7 +27,7 @@ const Previews = (props: Props) => {
         <CollapsibleMotion key={name || 'unnamed'} isDefaultClosed>
           {({ isOpen, toggle, containerStyles, registerContentNode }) => (
             <CollapsibleWrapper>
-              <PrimaryButton
+              <SecondaryButton
                 type="button"
                 label={
                   isOpen
@@ -35,7 +35,7 @@ const Previews = (props: Props) => {
                     : `Show ${name || 'unnamed'} preview`
                 }
                 onClick={toggle}
-              ></PrimaryButton>
+              ></SecondaryButton>
               <div style={containerStyles}>
                 <Container ref={registerContentNode}>
                   <TablePreview
