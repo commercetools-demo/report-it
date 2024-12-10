@@ -1,7 +1,6 @@
 import NewDatasource from './new-datasource';
 import Spacings from '@commercetools-uikit/spacings';
 import Text from '@commercetools-uikit/text';
-import DatasourceStateProvider from './provider';
 import AllDatasources from './all-datasources';
 import SelectedDatasources from './selected-datasources';
 
@@ -11,7 +10,6 @@ interface Props {
 }
 const Datasource: React.FC<Props> = ({ selectedDatasources, onSelect }) => {
   return (
-    <DatasourceStateProvider>
       <Spacings.Stack scale="xl">
         <Text.Subheadline>Selected Datasources</Text.Subheadline>
         <SelectedDatasources selectedDatasources={selectedDatasources} />
@@ -26,7 +24,6 @@ const Datasource: React.FC<Props> = ({ selectedDatasources, onSelect }) => {
           </Spacings.Inline>
         </Spacings.Stack>
       </Spacings.Stack>
-    </DatasourceStateProvider>
   );
 };
 

@@ -5,6 +5,9 @@ import { TabContext } from '../tab/tab-context';
 import { Tabs } from '../tab/tabs';
 import { TabPanels } from '../tab/panels';
 import WidgetDatasource from './widget-datasource';
+import DatasourceStateProvider from '../datasource/provider';
+import WidgetQuery from './widget-query';
+import WidgetDatasourceResponseProvider from './widget-datasource-response-provider';
 
 type Props = {
   errors: FormikErrors<Widget>;
@@ -18,20 +21,26 @@ const WidgetTabularView = (props: Props) => {
     return <WidgetMainInfo {...props} />;
   }
   return (
-    <TabContext defaultTab={0} paramName="widget-tab">
-      {({ selectedTab, setSelectedTab }) => (
-        <>
-          <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab}>
-            <span>Main Info</span>
-            <span>Select Datasource</span>
-          </Tabs>
-          <TabPanels selectedTab={selectedTab}>
-            <WidgetMainInfo {...props} />
-            <WidgetDatasource {...props} />
-          </TabPanels>
-        </>
-      )}
-    </TabContext>
+    <DatasourceStateProvider>
+      <TabContext defaultTab={0} paramName="widget-tab">
+        {({ selectedTab, setSelectedTab }) => (
+          <>
+            <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab}>
+              <span>Main Info</span>
+              <span>Select Datasource</span>
+              <span>Write query</span>
+            </Tabs>
+            <TabPanels selectedTab={selectedTab}>
+              <WidgetMainInfo {...props} />
+              <WidgetDatasource {...props} />
+              <WidgetDatasourceResponseProvider>
+                <WidgetQuery {...props} />
+              </WidgetDatasourceResponseProvider>
+            </TabPanels>
+          </>
+        )}
+      </TabContext>
+    </DatasourceStateProvider>
   );
 };
 

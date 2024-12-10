@@ -13,6 +13,8 @@ export interface Widget {
   name: string;
   config?: {
     [key: string]: any;
+    chartType: string;
+    dataColumns: string[];
     datasources: DatasourceRef[];
   };
   layout: WidgetLayout;

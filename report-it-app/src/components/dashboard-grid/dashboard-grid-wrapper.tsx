@@ -109,7 +109,7 @@ const DashboardGridWrapper = () => {
         isOpen={drawerState.isModalOpen}
         onClose={closeModal}
         hideControls
-        size={10}
+        size={selectedWidget ? 30 : 10}
       >
         <WidgetForm
           onSubmit={handleCreateWidget}

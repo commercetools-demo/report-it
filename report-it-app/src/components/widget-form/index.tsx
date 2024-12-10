@@ -1,7 +1,6 @@
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import Spacings from '@commercetools-uikit/spacings';
-
 import { Form, Formik } from 'formik';
 import { Widget } from '../../types/widget';
 import WidgetTabularView from './widget-tabular-view';

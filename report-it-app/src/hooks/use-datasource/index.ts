@@ -94,6 +94,26 @@ export const useDatasource = () => {
     return result;
   };
 
+  const getDatasources = async (
+    datasourceKeys?: string[]
+  ): Promise<DatasourceResponse[]> => {
+    if (!datasourceKeys || !datasourceKeys.length) {
+      return [] as DatasourceResponse[];
+    }
+    const result = await dispatchAppsRead(
+      actions.get({
+        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+        uri: buildUrlWithParams(`/${context?.project?.key}/custom-objects`, {
+          limit: '500',
+          where: `container="${CONTAINER}" and key in (${datasourceKeys
+            .map((key) => `"${key}"`)
+            .join(',')})`,
+        }),
+      })
+    );
+    return result.results;
+  };
+
   const updateDatasource = async (
     datasourceKey: string,
     datasource?: Datasource
@@ -126,5 +146,6 @@ export const useDatasource = () => {
     updateDatasource,
     deleteDatasource,
     createDatasource,
+    getDatasources,
   };
 };
