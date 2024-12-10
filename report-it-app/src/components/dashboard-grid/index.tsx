@@ -6,6 +6,7 @@ import { WidgetLayout } from '../../types/widget';
 import { useDashboardPanelStateContext } from '../dashboard-tab-panel/provider';
 import Widget from '../widget';
 import WidgetEditButton from '../widget/widget-edit-button';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 
 const StyledWrapper = styled.div<{ hasWidgets?: boolean }>`
   position: relative;
@@ -70,7 +71,11 @@ const DashboardGrid = ({
 
   return (
     <StyledWrapper hasWidgets={!!widgets?.length}>
-      {isLoading && <div>Loading...</div>}
+      {isLoading && (
+        <div>
+          <LoadingSpinner />
+        </div>
+      )}
       {!isLoading && (
         <>
           <ResponsiveGridLayout

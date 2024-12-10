@@ -1,37 +1,54 @@
-import React from 'react';
 import { WidgetResponse } from '../../types/widget';
-import { Chart } from 'react-google-charts';
-import styled from 'styled-components';
+import Chart from '../chart';
+import WidgetDatasourceResponseProvider from '../widget-form/widget-datasource-response-provider';
+import Text from '@commercetools-uikit/text';
 
 type Props = {
   widget: WidgetResponse;
 };
 
-const StyledDiv = styled.div`
-  width: 100%;
-  height: 100%;
-`;
-
 const Widget = ({ widget }: Props) => {
+  const { value } = widget;
+
+  if (!value) {
+    return (
+      <div>
+        <Text.Caption tone="warning">Widget not found</Text.Caption>
+      </div>
+    );
+  }
+  if (!value?.config?.chartType) {
+    return (
+      <div>
+        <Text.Caption tone="warning">No chart type</Text.Caption>
+      </div>
+    );
+  }
+  if (!value?.config?.chartFields?.length) {
+    return (
+      <div>
+        <Text.Caption tone="warning">No chart fields</Text.Caption>
+      </div>
+    );
+  }
+  if (!value?.config?.sqlQuery) {
+    return (
+      <div>
+        <Text.Caption tone="warning">No sql query</Text.Caption>
+      </div>
+    );
+  }
   return (
-    <StyledDiv>
+    <WidgetDatasourceResponseProvider
+      availableDatasourceKeys={value.config.datasources.map((d) => d.key)}
+    >
       <Chart
-        // Try different chart types by changing this property with one of: LineChart, BarChart, AreaChart...
-        chartType={widget.value?.config?.chartType || 'LineChart'}
-        data={[
-          ['Age', 'Weight'],
-          [4, 16],
-          [8, 25],
-          [12, 40],
-          [16, 55],
-          [20, 70],
-        ]}
-        options={{
-          title: 'Average Weight by Age',
-        }}
-        legendToggle
+        chartType={value.config.chartType}
+        chartFields={value.config.chartFields}
+        sqlQuery={value.config.sqlQuery}
+        name={value.name}
       />
-    </StyledDiv>
+    </WidgetDatasourceResponseProvider>
   );
 };
 

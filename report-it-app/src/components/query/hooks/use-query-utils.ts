@@ -79,10 +79,12 @@ export const useQueryUtils = () => {
       const result = alasql(query);
       setQueryResult(result);
       setError(null);
+      return result;
     } catch (err: any) {
       console.error(err);
       setError(err.message);
       setQueryResult(null);
+      return null;
     }
   };
   return {

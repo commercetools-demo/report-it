@@ -14,6 +14,7 @@ export interface Widget {
   config?: {
     [key: string]: any;
     chartType: string;
+    chartFields: string[];
     sqlQuery: string;
     datasources: DatasourceRef[];
   };

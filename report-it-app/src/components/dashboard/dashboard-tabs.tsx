@@ -17,6 +17,7 @@ import DashbaordForm from './dashboard-form';
 import DashboardTabButton from './dashboard-tab-button';
 import NewDashboardButton from './new-dashboard-button';
 import { useDashboardsStateContext } from './provider';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 const DashboardTabView = () => {
   const { isLoading, dashboards } = useDashboardsStateContext();
   const [selectedDashboard, setSelectedDashboard] =
@@ -26,7 +27,11 @@ const DashboardTabView = () => {
   const drawerState = useModalState();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   const handleCreateDashbaord = async (dashbaord: DashboardCustomObject) => {

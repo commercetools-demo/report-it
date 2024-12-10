@@ -14,6 +14,7 @@ import { type FetcherOpts, type FetcherParams } from '@graphiql/toolkit';
 import { useFormikContext } from 'formik';
 import { Widget } from '../../types/widget';
 import { useDatasource } from '../../hooks/use-datasource';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 
 export interface ContextShape {
   datasources: Record<string, { results: any[] }>;
@@ -89,8 +90,8 @@ const graphqlFetcher = async (
 
 const WidgetDatasourceResponseProvider = ({
   children,
-}: React.PropsWithChildren<{}>) => {
-  const { values } = useFormikContext<Widget>();
+  availableDatasourceKeys,
+}: React.PropsWithChildren<{ availableDatasourceKeys?: string[] }>) => {
   const [isLoading, setIsLoading] = useState(false);
   const { getDatasources } = useDatasource();
 
@@ -111,9 +112,7 @@ const WidgetDatasourceResponseProvider = ({
 
   const fetchAndSetDatasources = async () => {
     setIsLoading(true);
-    const fetchedDatasources = await getDatasources(
-      values?.config?.datasources.map((d) => d.key)
-    );
+    const fetchedDatasources = await getDatasources(availableDatasourceKeys);
 
     const responses = await Promise.all(
       fetchedDatasources.map((availableDatasource) => {
@@ -139,17 +138,21 @@ const WidgetDatasourceResponseProvider = ({
   };
 
   useEffect(() => {
-    if (!values?.config?.datasources?.length) {
+    if (!availableDatasourceKeys?.length) {
       setIsLoading(false);
 
       return;
     }
 
     fetchAndSetDatasources();
-  }, [values?.config?.datasources]);
+  }, [availableDatasourceKeys]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Or any loading indicator
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    ); // Or any loading indicator
   }
   return (
     <WidgetDatasourceResponseContext.Provider

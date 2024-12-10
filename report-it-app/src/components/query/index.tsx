@@ -6,6 +6,7 @@ import { useQueryUtils } from './hooks/use-query-utils';
 import { TablePreview } from './table-preview';
 import Previews from './previews';
 import PrimaryButton from '@commercetools-uikit/primary-button';
+import Text from '@commercetools-uikit/text';
 
 // Styled Components
 const Container = styled.div`
@@ -72,6 +73,16 @@ export const PREVIEW_ROWS = 5;
 
 const WidgetQuery: React.FC<Props> = ({ handleChange, values }) => {
   const { executeQuery, queryResult, error } = useQueryUtils();
+
+  if (!values.config?.datasources?.length) {
+    return (
+      <div>
+        <Text.Caption tone="warning">
+          Please select at least one datasource
+        </Text.Caption>
+      </div>
+    );
+  }
 
   return (
     <Container>
