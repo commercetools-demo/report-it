@@ -16,7 +16,7 @@ import { Widget } from '../../types/widget';
 import { useDatasource } from '../../hooks/use-datasource';
 
 export interface ContextShape {
-  datasources: {};
+  datasources: Record<string, { results: any[] }>;
   fetcher: (graphQLParams: FetcherParams, fetcherOpts?: FetcherOpts) => any;
 }
 
@@ -94,7 +94,9 @@ const WidgetDatasourceResponseProvider = ({
   const [isLoading, setIsLoading] = useState(false);
   const { getDatasources } = useDatasource();
 
-  const [datasources, setDatasources] = useState<Record<string, any>>({});
+  const [datasources, setDatasources] = useState<
+    Record<string, { results: any[] }>
+  >({});
 
   const fetcher = useCallback(
     (graphQLParams: FetcherParams, fetcherOpts?: FetcherOpts) =>
@@ -118,19 +120,23 @@ const WidgetDatasourceResponseProvider = ({
         return fetcher({
           query: availableDatasource.value?.query || '',
         }).then((data) =>
-          Object.keys(data.data).reduce((acc: Record<string, any>, key) => {
-            acc[key] = data.data[key];
-            return acc;
-          }, {})
+          Object.keys(data.data).reduce(
+            (acc: Record<string, { results: any[] }>, key) => {
+              acc[key] = data.data[key];
+              return acc;
+            },
+            {}
+          )
         );
       })
     );
-    setDatasources(responses.reduce((acc, response) => {
-      return { ...acc, ...response };
-    }, {}));
+    setDatasources(
+      responses.reduce((acc, response) => {
+        return { ...acc, ...response };
+      }, {})
+    );
     setIsLoading(false);
   };
-
 
   useEffect(() => {
     if (!values?.config?.datasources?.length) {

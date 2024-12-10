@@ -6,7 +6,7 @@ import { Tabs } from '../tab/tabs';
 import { TabPanels } from '../tab/panels';
 import WidgetDatasource from './widget-datasource';
 import DatasourceStateProvider from '../datasource/provider';
-import WidgetQuery from './widget-query';
+import WidgetQuery from '../query';
 import WidgetDatasourceResponseProvider from './widget-datasource-response-provider';
 
 type Props = {

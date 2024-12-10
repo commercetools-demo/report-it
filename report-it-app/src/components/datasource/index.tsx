@@ -10,20 +10,20 @@ interface Props {
 }
 const Datasource: React.FC<Props> = ({ selectedDatasources, onSelect }) => {
   return (
-      <Spacings.Stack scale="xl">
-        <Text.Subheadline>Selected Datasources</Text.Subheadline>
-        <SelectedDatasources selectedDatasources={selectedDatasources} />
-        <Spacings.Stack scale="l">
-          <Text.Subheadline>Pick from all Datasources</Text.Subheadline>
-          <AllDatasources
-            selectedDatasources={selectedDatasources}
-            onSelect={onSelect}
-          />
-          <Spacings.Inline justifyContent="space-between">
-            <NewDatasource />
-          </Spacings.Inline>
-        </Spacings.Stack>
+    <Spacings.Stack scale="xl">
+      <Text.Subheadline>Selected Datasources</Text.Subheadline>
+      <SelectedDatasources selectedDatasources={selectedDatasources} />
+      <Spacings.Stack scale="l">
+        <Text.Subheadline>Pick from all Datasources</Text.Subheadline>
+        <AllDatasources
+          selectedDatasources={selectedDatasources}
+          onSelect={onSelect}
+        />
+        <Spacings.Inline justifyContent="space-between">
+          <NewDatasource />
+        </Spacings.Inline>
       </Spacings.Stack>
+    </Spacings.Stack>
   );
 };
 
