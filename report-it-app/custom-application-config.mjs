@@ -39,8 +39,8 @@ const config = {
   },
   headers:{
     csp: {
-      "connect-src": ["https://www.gstatic.com", "'unsafe-eval'"],
-      "script-src": ["https://www.gstatic.com", "'unsafe-eval'"],
+      "connect-src": ["https://www.gstatic.com", "'unsafe-eval'", "https://api.openai.com"],
+      "script-src": ["https://www.gstatic.com", "'unsafe-eval'", "https://api.openai.com"],
       "style-src": ["https://www.gstatic.com"],
       "img-src": ["https://www.gstatic.com",],
     }

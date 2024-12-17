@@ -7,7 +7,9 @@ import FieldLabel from '@commercetools-uikit/field-label';
 import TextInput from '@commercetools-uikit/text-input';
 import Text from '@commercetools-uikit/text';
 import Editor from '../editor';
-import { Datasource } from '../../../../../types/datasource';
+import AIGenerationButton from '../../ai-generation/ai-generation-button';
+import { useOpenAI } from '../../../hooks/openai';
+import { Datasource } from '../../../types/datasource';
 
 type Props = {
   onSubmit: (datasource: Datasource) => Promise<void>;
@@ -34,6 +36,8 @@ const DatasourceForm = ({
     variables: '',
   } as Datasource,
 }: Props) => {
+  const { getGraphQLQueries } = useOpenAI();
+
   const handleValidation = (values: Datasource) => {
     const errors: Record<keyof Datasource, string> = {} as never;
     if (!values.name) {
@@ -88,15 +92,24 @@ const DatasourceForm = ({
               )}
             </Grid.Item>
           </Grid>
-          <Editor
-            target="ctp"
-            query={datasource.query}
-            onUpdateQuery={(query) => setFieldValue('query', query)}
-            variables={datasource.variables}
-            onUpdateVariables={(variables) =>
-              setFieldValue('variables', variables)
-            }
-          />
+          <Grid.Item gridColumn="span 2">
+            <AIGenerationButton onSelectAIGeneration={getGraphQLQueries}>
+              {({ generatedQuery, isSuggestionArrived }) => (
+                <Editor
+                  target="ctp"
+                  query={
+                    !isSuggestionArrived ? datasource.query : generatedQuery
+                  }
+                  onUpdateQuery={(query) => setFieldValue('query', query)}
+                  variables={datasource.variables}
+                  onUpdateVariables={(variables) =>
+                    setFieldValue('variables', variables)
+                  }
+                />
+              )}
+            </AIGenerationButton>
+          </Grid.Item>
+
           {errors.query && (
             <Text.Caption tone="warning">{errors.query}</Text.Caption>
           )}

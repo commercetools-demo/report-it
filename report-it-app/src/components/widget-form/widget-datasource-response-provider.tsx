@@ -1,3 +1,10 @@
+import {
+  buildApiUrl,
+  executeHttpClientRequest,
+} from '@commercetools-frontend/application-shell';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import createHttpUserAgent from '@commercetools/http-user-agent';
+import { type FetcherOpts, type FetcherParams } from '@graphiql/toolkit';
 import React, {
   createContext,
   useCallback,
@@ -5,16 +12,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {
-  buildApiUrl,
-  executeHttpClientRequest,
-} from '@commercetools-frontend/application-shell';
-import createHttpUserAgent from '@commercetools/http-user-agent';
-import { type FetcherOpts, type FetcherParams } from '@graphiql/toolkit';
-import { useFormikContext } from 'formik';
-import { Widget } from '../../types/widget';
 import { useDatasource } from '../../hooks/use-datasource';
-import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 
 export interface ContextShape {
   datasources: Record<string, { results: any[] }>;
@@ -84,7 +82,9 @@ const graphqlFetcher = async (
         ...fetcherOpts?.headers,
       },
     }
-  );
+  ).catch((error) => {
+    return { data: {} };
+  });
   return data;
 };
 
@@ -119,9 +119,9 @@ const WidgetDatasourceResponseProvider = ({
         return fetcher({
           query: availableDatasource.value?.query || '',
         }).then((data) =>
-          Object.keys(data.data).reduce(
+          Object.keys(data?.data || {}).reduce(
             (acc: Record<string, { results: any[] }>, key) => {
-              acc[key] = data.data[key];
+              acc[key] = data?.data?.[key];
               return acc;
             },
             {}

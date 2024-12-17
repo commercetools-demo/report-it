@@ -22,7 +22,7 @@ export const Tabs: React.FC<
     <StyledWrapper>
       <StyledNav role="tablist">
         {Array.isArray(children) ? (
-          children.map((child, index) => (
+          children.filter(Boolean).map((child, index) => (
             <TabButton
               key={index}
               isSelected={selectedTab === index}

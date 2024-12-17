@@ -3,7 +3,7 @@ import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import Spacings from '@commercetools-uikit/spacings';
 import Dashboard from './components/dashboard';
 import Configuration from './components/configuration';
-import ChartConfiguration from './components/chart-configuration';
+import { OpenAIConfigurationProvider } from './providers/open-ai';
 
 type ApplicationRoutesProps = {
   children?: ReactNode;
@@ -23,19 +23,18 @@ const ApplicationRoutes = (_props: ApplicationRoutesProps) => {
    */
 
   return (
-    <Spacings.Inset scale="l">
-      <Switch>
-        <Route path={`${match.path}/configuration`}>
-          <Configuration linkToParent={match.url} />
-        </Route>
-        <Route path={`${match.path}/configuration/:chart`}>
-          <ChartConfiguration linkToParent={match.url} />
-        </Route>
-        <Route>
-          <Dashboard linkToParent={match.url} />
-        </Route>
-      </Switch>
-    </Spacings.Inset>
+    <OpenAIConfigurationProvider>
+      <Spacings.Inset scale="l">
+        <Switch>
+          <Route path={`${match.path}/configuration`}>
+            <Configuration linkToParent={match.url} />
+          </Route>
+          <Route>
+            <Dashboard linkToParent={match.url} />
+          </Route>
+        </Switch>
+      </Spacings.Inset>
+    </OpenAIConfigurationProvider>
   );
 };
 ApplicationRoutes.displayName = 'ApplicationRoutes';

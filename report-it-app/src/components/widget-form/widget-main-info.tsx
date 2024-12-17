@@ -11,10 +11,18 @@ import { Widget } from '../../types/widget';
 type Props = {
   errors: FormikErrors<Widget>;
   values: Widget;
+  widget?: Widget;
   handleChange: any;
+  onSelectAIGeneration?: (value: boolean) => void;
 };
 
-const WidgetMainInfo = ({ errors, values, handleChange }: Props) => {
+const WidgetMainInfo = ({
+  errors,
+  values,
+  handleChange,
+  widget,
+  onSelectAIGeneration,
+}: Props) => {
   return (
     <Grid
       gridGap="16px"

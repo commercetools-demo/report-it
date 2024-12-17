@@ -9,6 +9,7 @@ import DatasourceStateProvider from '../datasource/provider';
 import WidgetQuery from '../query';
 import WidgetDatasourceResponseProvider from './widget-datasource-response-provider';
 import WidgetChart from './widget-chart';
+import { useMemo, useState } from 'react';
 
 type Props = {
   errors: FormikErrors<Widget>;
@@ -18,6 +19,9 @@ type Props = {
 };
 
 const WidgetTabularView = (props: Props) => {
+  const availableDatasourceKeys = useMemo(() => {
+    return props.widget?.config?.datasources.map((d) => d.key);
+  }, [props.widget?.config?.datasources]);
   if (!props.widget?.name) {
     return <WidgetMainInfo {...props} />;
   }
@@ -26,9 +30,7 @@ const WidgetTabularView = (props: Props) => {
       <TabContext defaultTab={0} paramName="widget-tab">
         {({ selectedTab, setSelectedTab }) => (
           <WidgetDatasourceResponseProvider
-            availableDatasourceKeys={props.widget?.config?.datasources.map(
-              (d) => d.key
-            )}
+            availableDatasourceKeys={availableDatasourceKeys}
           >
             <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab}>
               <span>Main Info</span>
