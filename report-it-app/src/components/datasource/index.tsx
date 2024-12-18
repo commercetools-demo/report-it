@@ -3,6 +3,12 @@ import Spacings from '@commercetools-uikit/spacings';
 import Text from '@commercetools-uikit/text';
 import AllDatasources from './all-datasources';
 import SelectedDatasources from './selected-datasources';
+import styled from 'styled-components';
+
+const Spacer = styled.div`
+  height: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+`;
 
 interface Props {
   selectedDatasources?: string[];
@@ -11,10 +17,11 @@ interface Props {
 const Datasource: React.FC<Props> = ({ selectedDatasources, onSelect }) => {
   return (
     <Spacings.Stack scale="xl">
-      <Text.Subheadline>Selected Datasources</Text.Subheadline>
+      <Text.Headline>Selected datasources for this Widget</Text.Headline>
       <SelectedDatasources selectedDatasources={selectedDatasources} />
+      <Spacer />
       <Spacings.Stack scale="l">
-        <Text.Subheadline>Pick from all Datasources</Text.Subheadline>
+        <Text.Headline>Pick from all Datasources</Text.Headline>
         <AllDatasources
           selectedDatasources={selectedDatasources}
           onSelect={onSelect}
