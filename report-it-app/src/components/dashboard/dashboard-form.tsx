@@ -1,4 +1,6 @@
 import Grid from '@commercetools-uikit/grid';
+import IconButton from '@commercetools-uikit/icon-button';
+import { BinLinearIcon } from '@commercetools-uikit/icons';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import Spacings from '@commercetools-uikit/spacings';
@@ -10,12 +12,14 @@ import { DashboardCustomObject } from '../../types/dashboard';
 type Props = {
   onSubmit: (dashbaord: DashboardCustomObject) => Promise<void>;
   onCancel: () => void;
+  onDelete: () => void;
   dashboard?: DashboardCustomObject;
 };
 
 const DashbaordForm = ({
   onCancel,
   onSubmit,
+  onDelete,
   dashboard = { value: { name: '' } },
 }: Props) => {
   const handleValidation = (values: DashboardCustomObject) => {
@@ -42,17 +46,31 @@ const DashbaordForm = ({
               justifyContent="flex-end"
               scale="m"
             >
-              <SecondaryButton
-                label="Cancel"
-                onClick={onCancel}
-                type="button"
-              />
-              <PrimaryButton
-                label="Save"
-                onClick={submitForm}
-                type="button"
-                isDisabled={!dirty}
-              />
+              <Spacings.Inline
+                alignItems="center"
+                justifyContent="flex-end"
+                scale="m"
+              >
+                <SecondaryButton
+                  label="Cancel"
+                  onClick={onCancel}
+                  type="button"
+                />
+                <PrimaryButton
+                  label="Save"
+                  onClick={submitForm}
+                  type="button"
+                  isDisabled={!dirty}
+                />
+              </Spacings.Inline>
+              {!!dashboard?.value?.name && !!onDelete && (
+                <IconButton
+                  label="Delete"
+                  onClick={onDelete}
+                  icon={<BinLinearIcon size="small" />}
+                  type="button"
+                />
+              )}
             </Spacings.Inline>
           </div>
           <Grid

@@ -1,11 +1,17 @@
 import { Context, createContext, useContext, useEffect, useState } from 'react';
 import { useDashboard } from '../../hooks/use-dashboard';
-import { DashboardCustomObject } from '../../types/dashboard';
+import {
+  DashboardCustomObject,
+  DashboardResponse,
+} from '../../types/dashboard';
 
 interface ContextShape {
   dashboards?: DashboardCustomObject[];
   isLoading: boolean;
   createDashboard?: (dashboardName: string) => Promise<void>;
+  deleteDashboard?: (
+    dashboardKey: string
+  ) => Promise<DashboardResponse | undefined>;
   updateDashboard?: (dashboard: DashboardCustomObject) => Promise<void>;
 }
 
@@ -15,6 +21,7 @@ const DashboardsStateContext: Context<ContextShape> =
     isLoading: false,
     createDashboard: () => Promise.resolve(),
     updateDashboard: () => Promise.resolve(),
+    deleteDashboard: () => Promise.resolve(),
   });
 
 export const DashboardsProvider = ({
@@ -24,8 +31,12 @@ export const DashboardsProvider = ({
   const [dashboards, setDashboards] = useState<DashboardCustomObject[]>();
   const [isLoading, setIsLoading] = useState(false);
   // const debouncedDashboards = useDebounce(dashboards, 500);
-  const { fetchAllDashboards, createDashboard, updateDashboard } =
-    useDashboard();
+  const {
+    fetchAllDashboards,
+    createDashboard,
+    updateDashboard,
+    deleteDashboard,
+  } = useDashboard();
 
   const getAllDashboards = async (): Promise<void> => {
     setIsLoading(true);
@@ -43,6 +54,19 @@ export const DashboardsProvider = ({
         getAllDashboards();
       }
     }
+  };
+
+  const remoevDashboard = async (
+    dashboardKey: string
+  ): Promise<DashboardResponse | undefined> => {
+    if (dashboardKey) {
+      const result = await deleteDashboard(dashboardKey);
+      if (result?.key) {
+        getAllDashboards();
+      }
+      return result;
+    }
+    return undefined;
   };
 
   const update = async (dashboard: DashboardCustomObject): Promise<void> => {
@@ -77,6 +101,7 @@ export const DashboardsProvider = ({
         isLoading,
         createDashboard: createNewDashboard,
         updateDashboard: update,
+        deleteDashboard: remoevDashboard,
       }}
     >
       {children}

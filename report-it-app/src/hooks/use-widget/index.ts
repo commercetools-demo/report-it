@@ -15,7 +15,7 @@ const CONTAINER = `${APP_NAME}_widgets`;
 const WIDGET_KEY_PREFIX = 'widget-';
 
 export const useWidget = () => {
-  const { getDashboard } = useDashboard();
+  const { getDashboard, removeWidgetFromDashboard } = useDashboard();
   const context = useApplicationContext((context) => context);
 
   const dispatchAppsAction = useAsyncDispatch<TSdkAction, WidgetResponse>();
@@ -42,8 +42,11 @@ export const useWidget = () => {
     return result;
   };
 
-  const deleteWidget = async (widgetKey: string): Promise<WidgetResponse> => {
-    if (!widgetKey) {
+  const deleteWidget = async (
+    widgetKey: string,
+    dashboardKey: string
+  ): Promise<WidgetResponse> => {
+    if (!widgetKey || !dashboardKey) {
       return {} as WidgetResponse;
     }
     const result = await dispatchAppsAction(
@@ -52,6 +55,9 @@ export const useWidget = () => {
         uri: `/${context?.project?.key}/custom-objects/${CONTAINER}/${widgetKey}`,
       })
     );
+    if (result.key) {
+      removeWidgetFromDashboard(dashboardKey, widgetKey);
+    }
     return result;
   };
 

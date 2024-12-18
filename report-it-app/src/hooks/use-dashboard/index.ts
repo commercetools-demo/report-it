@@ -1,5 +1,9 @@
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
-import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
+import {
+  MC_API_PROXY_TARGETS,
+  NOTIFICATION_DOMAINS,
+  NOTIFICATION_KINDS_SIDE,
+} from '@commercetools-frontend/constants';
 import {
   actions,
   TSdkAction,
@@ -14,11 +18,13 @@ import {
 } from '../../types/dashboard';
 import { WidgetRef } from '../../types/widget';
 import { buildUrlWithParams, uniqueId } from '../../utils/utils';
+import { useShowNotification } from '@commercetools-frontend/actions-global';
 
 const CONTAINER = `${APP_NAME}_dashboards`;
 const DASHBOARD_KEY_PREFIX = 'dashboard-';
 
 export const useDashboard = () => {
+  const showNotification = useShowNotification();
   const context = useApplicationContext((context) => context);
   const dispatchAppsRead = useAsyncDispatch<
     TSdkAction,
@@ -64,21 +70,6 @@ export const useDashboard = () => {
     return result;
   };
 
-  const deleteDashboard = async (
-    dashboardKey: string
-  ): Promise<DashboardResponse> => {
-    if (!dashboardKey) {
-      return {} as DashboardResponse;
-    }
-    const result = await dispatchAppsAction(
-      actions.del({
-        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
-        uri: `/${context?.project?.key}/custom-objects/${CONTAINER}/${dashboardKey}`,
-      })
-    );
-    return result;
-  };
-
   const getDashboard = async (
     dashboardKey: string
   ): Promise<DashboardResponse> => {
@@ -87,6 +78,30 @@ export const useDashboard = () => {
     }
     const result = await dispatchAppsAction(
       actions.get({
+        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+        uri: `/${context?.project?.key}/custom-objects/${CONTAINER}/${dashboardKey}`,
+      })
+    );
+    return result;
+  };
+
+  const deleteDashboard = async (
+    dashboardKey: string
+  ): Promise<DashboardResponse> => {
+    if (!dashboardKey) {
+      return {} as DashboardResponse;
+    }
+    const dashboard = await getDashboard(dashboardKey);
+    if (dashboard?.value?.widgets?.length) {
+      showNotification({
+        domain: NOTIFICATION_DOMAINS.SIDE,
+        kind: NOTIFICATION_KINDS_SIDE.error,
+        text: 'There are widgets referenced in this dashboard. Please remove them first.',
+      });
+      return {} as DashboardResponse;
+    }
+    const result = await dispatchAppsAction(
+      actions.del({
         mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
         uri: `/${context?.project?.key}/custom-objects/${CONTAINER}/${dashboardKey}`,
       })
@@ -122,8 +137,36 @@ export const useDashboard = () => {
     return result;
   };
 
+  const removeWidgetFromDashboard = async (
+    dashboardKey: string,
+    widgetKey: string
+  ): Promise<DashboardResponse> => {
+    if (!dashboardKey) {
+      return {} as DashboardResponse;
+    }
+    const result = await getDashboard(dashboardKey).then((ds) => {
+      const widgets = ds.value.widgets?.filter((w) => w.key !== widgetKey);
+      return dispatchAppsAction(
+        actions.post({
+          mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+          uri: `/${context?.project?.key}/custom-objects`,
+          payload: {
+            container: CONTAINER,
+            key: dashboardKey,
+            value: {
+              ...ds.value,
+              widgets,
+            },
+          } as DashboardCustomObjectDraft,
+        })
+      );
+    });
+    return result;
+  };
+
   return {
     fetchAllDashboards,
+    removeWidgetFromDashboard,
     getDashboard,
     updateDashboard,
     createDashboard,

@@ -66,7 +66,7 @@ export const DashboardPanelProvider = ({
     if (!widgetKey) {
       return;
     }
-    await deleteWidget(widgetKey);
+    await deleteWidget(widgetKey, dashboard.key);
   };
   const update = async (
     widgetKey: string,
