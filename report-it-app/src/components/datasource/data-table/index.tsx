@@ -1,9 +1,9 @@
 import Constraints from '@commercetools-uikit/constraints';
 import { useMemo, useState } from 'react';
-
 import {
   Drawer,
   useModalState,
+  ConfirmationDialog,
 } from '@commercetools-frontend/application-components';
 import DataTable from '@commercetools-uikit/data-table';
 import {
@@ -14,6 +14,7 @@ import { Pagination } from '@commercetools-uikit/pagination';
 import Spacings from '@commercetools-uikit/spacings';
 import DatasourceForm from '../datasource-form';
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
+import Text from '@commercetools-uikit/text';
 import { Datasource, DatasourceResponse } from '../../../types/datasource';
 import { useDatasource } from '../../../hooks/use-datasource';
 import { PagedQueryResponse } from '../../../types/general';
@@ -83,9 +84,10 @@ const DatasourceDataTable = ({
   const [selectedDatasourceResponse, setSelectedDatasourceResponse] =
     useState<DatasourceResponse>();
 
-  const { updateDatasource } = useDatasource();
+  const { updateDatasource, deleteDatasource } = useDatasource();
 
   const drawerState = useModalState();
+  const confirmState = useModalState();
 
   const handleUpdateDatasource = async (datasource: Datasource) => {
     const result = await updateDatasource(
@@ -97,6 +99,20 @@ const DatasourceDataTable = ({
     if (!!result) {
       drawerState.closeModal();
     }
+  };
+
+  const handleDeleteConfirmation = () => {
+    if (!selectedDatasourceResponse?.key) {
+      return;
+    }
+
+    confirmState.openModal();
+  };
+
+  const handleDeleteDatasource = async () => {
+    await deleteDatasource(selectedDatasourceResponse?.key || '');
+    refreshData?.();
+    confirmState.closeModal();
   };
 
   const handleOpenModal = (datasource: DatasourceResponse) => {
@@ -144,9 +160,19 @@ const DatasourceDataTable = ({
         <DatasourceForm
           onSubmit={handleUpdateDatasource}
           onCancel={drawerState.closeModal}
+          onDelete={handleDeleteConfirmation}
           datasource={selectedDatasourceResponse?.value}
         />
       </Drawer>
+      <ConfirmationDialog
+        isOpen={confirmState.isModalOpen}
+        onClose={confirmState.closeModal}
+        onConfirm={handleDeleteDatasource}
+        title="Delete datasource"
+        onCancel={confirmState.closeModal}
+      >
+        <Text.Body>Are you sure you want to delete this datasource?</Text.Body>
+      </ConfirmationDialog>
     </Constraints.Horizontal>
   );
 };

@@ -1,18 +1,22 @@
+import FieldLabel from '@commercetools-uikit/field-label';
 import Grid from '@commercetools-uikit/grid';
+import IconButton from '@commercetools-uikit/icon-button';
+import { BinLinearIcon } from '@commercetools-uikit/icons';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import Spacings from '@commercetools-uikit/spacings';
-import { Form, Formik } from 'formik';
-import FieldLabel from '@commercetools-uikit/field-label';
-import TextInput from '@commercetools-uikit/text-input';
 import Text from '@commercetools-uikit/text';
-import Editor from '../editor';
-import AIGenerationButton from '../../ai-generation/ai-generation-button';
+import TextInput from '@commercetools-uikit/text-input';
+import { Form, Formik } from 'formik';
+import styled from 'styled-components';
 import { useOpenAI } from '../../../hooks/openai';
 import { Datasource } from '../../../types/datasource';
+import AIGenerationButton from '../../ai-generation/ai-generation-button';
+import Editor from '../editor';
 
 type Props = {
   onSubmit: (datasource: Datasource) => Promise<void>;
+  onDelete?: () => void;
   onCancel: () => void;
   datasource?: Datasource;
 };
@@ -27,9 +31,16 @@ query ProjectInfo {
 }
 `;
 
+const Spacer = styled.div`
+  height: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+`;
+
 const DatasourceForm = ({
   onSubmit,
   onCancel,
+  onDelete,
   datasource = {
     name: '',
     query: initialQueryCtp,
@@ -65,12 +76,30 @@ const DatasourceForm = ({
               justifyContent="flex-end"
               scale="m"
             >
-              <SecondaryButton
-                label="Cancel"
-                onClick={onCancel}
-                type="button"
-              />
-              <PrimaryButton label="Save" onClick={submitForm} type="button" />
+              <Spacings.Inline
+                alignItems="center"
+                justifyContent="flex-end"
+                scale="m"
+              >
+                <SecondaryButton
+                  label="Cancel"
+                  onClick={onCancel}
+                  type="button"
+                />
+                <PrimaryButton
+                  label="Save"
+                  onClick={submitForm}
+                  type="button"
+                />
+                {!!datasource?.name && !!onDelete && (
+                  <IconButton
+                    label="Delete"
+                    onClick={onDelete}
+                    icon={<BinLinearIcon size="small" />}
+                    type="button"
+                  />
+                )}
+              </Spacings.Inline>
             </Spacings.Inline>
           </div>
           <Grid
@@ -78,7 +107,7 @@ const DatasourceForm = ({
             gridTemplateColumns="repeat(2, 1fr)"
             gridAutoColumns="1fr"
           >
-            <Grid.Item gridColumn="span 2">
+            <Grid.Item gridColumn="span 1">
               <Spacings.Inline alignItems="center">
                 <FieldLabel title="Name" />
                 <TextInput
@@ -93,6 +122,8 @@ const DatasourceForm = ({
             </Grid.Item>
           </Grid>
           <Grid.Item gridColumn="span 2">
+            <FieldLabel title="Query" />
+            <Spacer />
             <AIGenerationButton onSelectAIGeneration={getGraphQLQueries}>
               {({ generatedQuery, isSuggestionArrived }) => (
                 <Editor

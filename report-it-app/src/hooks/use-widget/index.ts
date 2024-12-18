@@ -93,6 +93,26 @@ export const useWidget = () => {
     return result?.results;
   };
 
+  const getWidgetsWithDatasource = async (
+    datasourceKey: string
+  ): Promise<WidgetResponse[]> => {
+    if (!datasourceKey) {
+      return [] as WidgetResponse[];
+    }
+    const result = await dispatchAppsRead(
+      actions.get({
+        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+        uri: buildUrlWithParams(
+          `/${context?.project?.key}/custom-objects/${CONTAINER}`,
+          {
+            where: `value(config(datasources(key="${datasourceKey}")))`,
+          }
+        ),
+      })
+    );
+    return result?.results;
+  };
+
   const updateWidget = async (
     widgetKey: string,
     widget?: Widget
@@ -125,5 +145,6 @@ export const useWidget = () => {
     getWidget,
     getWidgets,
     updateWidget,
+    getWidgetsWithDatasource,
   };
 };

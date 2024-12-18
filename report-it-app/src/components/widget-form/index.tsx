@@ -1,5 +1,7 @@
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
+import IconButton from '@commercetools-uikit/icon-button';
+import { BinLinearIcon } from '@commercetools-uikit/icons';
 import Spacings from '@commercetools-uikit/spacings';
 import { Form, Formik } from 'formik';
 import { Widget } from '../../types/widget';
@@ -85,17 +87,31 @@ const WidgetForm = ({ onCancel, onSubmit, onDelete, widget }: Props) => {
               justifyContent="flex-end"
               scale="m"
             >
-              <SecondaryButton
-                label="Cancel"
-                onClick={onCancel}
-                type="button"
-              />
-              <PrimaryButton
-                label="Save"
-                onClick={submitForm}
-                type="button"
-                isDisabled={!dirty}
-              />
+              <Spacings.Inline
+                alignItems="center"
+                justifyContent="flex-end"
+                scale="m"
+              >
+                <SecondaryButton
+                  label="Cancel"
+                  onClick={onCancel}
+                  type="button"
+                />
+                <PrimaryButton
+                  label="Save"
+                  onClick={submitForm}
+                  type="button"
+                  isDisabled={!dirty}
+                />
+              </Spacings.Inline>
+              {!!widget && (
+                <IconButton
+                  label="Delete"
+                  onClick={onDelete}
+                  icon={<BinLinearIcon size="small" />}
+                  type="button"
+                />
+              )}
             </Spacings.Inline>
           </div>
           <WidgetTabularView
@@ -104,22 +120,6 @@ const WidgetForm = ({ onCancel, onSubmit, onDelete, widget }: Props) => {
             widget={widget}
             handleChange={handleChange}
           />
-          {widget && (
-            <div style={{ paddingTop: '16px' }}>
-              <Spacings.Inline
-                alignItems="center"
-                justifyContent="flex-end"
-                scale="m"
-              >
-                <PrimaryButton
-                  label="Delete"
-                  tone="critical"
-                  onClick={onDelete}
-                  type="button"
-                />
-              </Spacings.Inline>
-            </div>
-          )}
         </Form>
       )}
     </Formik>

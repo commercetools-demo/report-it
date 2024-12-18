@@ -3,7 +3,11 @@ import {
   actions,
   TSdkAction,
 } from '@commercetools-frontend/sdk';
-import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
+import {
+  MC_API_PROXY_TARGETS,
+  NOTIFICATION_DOMAINS,
+  NOTIFICATION_KINDS_SIDE,
+} from '@commercetools-frontend/constants';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { APP_NAME } from '../../constants';
 import { PagedQueryResponse } from '../../types/general';
@@ -13,12 +17,16 @@ import {
   DatasourceResponse,
 } from '../../types/datasource';
 import { buildUrlWithParams, uniqueId } from '../../utils/utils';
+import { useWidget } from '../use-widget';
+import { useShowNotification } from '@commercetools-frontend/actions-global';
 
 const CONTAINER = `${APP_NAME}_datasources`;
 const DATASOURCES_KEY_PREFIX = 'datasource-';
 
 export const useDatasource = () => {
   const context = useApplicationContext((context) => context);
+  const { getWidgetsWithDatasource } = useWidget();
+  const showNotification = useShowNotification();
   const dispatchAppsRead = useAsyncDispatch<
     TSdkAction,
     PagedQueryResponse<DatasourceResponse>
@@ -70,6 +78,17 @@ export const useDatasource = () => {
     if (!datasourceKey) {
       return {} as DatasourceResponse;
     }
+    // find all widgets with this datasourceRef
+    const widgets = await getWidgetsWithDatasource(datasourceKey);
+    if (widgets?.length) {
+      showNotification({
+        domain: NOTIFICATION_DOMAINS.SIDE,
+        kind: NOTIFICATION_KINDS_SIDE.error,
+        text: 'There are widgets using this datasource',
+      });
+      return {} as DatasourceResponse;
+    }
+
     const result = await dispatchAppsAction(
       actions.del({
         mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,

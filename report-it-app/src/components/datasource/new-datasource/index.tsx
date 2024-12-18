@@ -7,9 +7,11 @@ import PrimaryButton from '@commercetools-uikit/primary-button';
 import DatasourceForm from '../datasource-form';
 import { useDatasource } from '../../../hooks/use-datasource';
 import { DatasourceDraft } from '../../../types/datasource';
+import { useDatasourceStateContext } from '../provider';
 
 const NewDatasource = () => {
   const drawerState = useModalState();
+  const { refreshData } = useDatasourceStateContext();
 
   const { createDatasource } = useDatasource();
 
@@ -18,6 +20,7 @@ const NewDatasource = () => {
     if (!!result) {
       drawerState.closeModal();
     }
+    refreshData?.();
   };
 
   return (
