@@ -7,6 +7,8 @@ import { TablePreview } from './table-preview';
 import Previews from './previews';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import Text from '@commercetools-uikit/text';
+import AIGenerationButton from '../ai-generation/ai-generation-button';
+import { useOpenAI } from '../../hooks/openai';
 
 // Styled Components
 const Container = styled.div`
@@ -73,6 +75,7 @@ export const PREVIEW_ROWS = 5;
 
 const WidgetQuery: React.FC<Props> = ({ handleChange, values }) => {
   const { executeQuery, queryResult, error } = useQueryUtils();
+  const { getAlaSQLQueries } = useOpenAI();
 
   if (!values.config?.datasources?.length) {
     return (
@@ -95,12 +98,18 @@ const WidgetQuery: React.FC<Props> = ({ handleChange, values }) => {
       {/* Query Editor Section */}
       <Card>
         <CardTitle>SQL Query Editor</CardTitle>
-        <QueryTextarea
-          value={values.config?.sqlQuery}
-          name="config.sqlQuery"
-          onChange={handleChange}
-          placeholder="Enter your SQL query here..."
-        />
+        <AIGenerationButton onSelectAIGeneration={getAlaSQLQueries}>
+          {({ generatedQuery, isSuggestionArrived }) => (
+            <QueryTextarea
+              value={
+                !isSuggestionArrived ? values.config?.sqlQuery : generatedQuery
+              }
+              name="config.sqlQuery"
+              onChange={handleChange}
+              placeholder="Enter your SQL query here..."
+            />
+          )}
+        </AIGenerationButton>
         <PrimaryButton
           label="Execute Query"
           type="button"
