@@ -69,13 +69,20 @@ type Props = {
   values: Widget;
   widget?: Widget;
   handleChange: any;
+  setFieldValue: any;
 };
 
 export const PREVIEW_ROWS = 5;
 
-const WidgetQuery: React.FC<Props> = ({ handleChange, values }) => {
+const WidgetQuery: React.FC<Props> = ({ handleChange, values, setFieldValue }) => {
   const { executeQuery, queryResult, error } = useQueryUtils();
   const { getAlaSQLQueries } = useOpenAI();
+
+  const handleGetAlaSQLQueries = async (seed: string): Promise<string> => {
+    const result = await getAlaSQLQueries(seed);
+    setFieldValue('config.sqlQuery', result);
+    return result;
+  };
 
   if (!values.config?.datasources?.length) {
     return (
@@ -98,12 +105,10 @@ const WidgetQuery: React.FC<Props> = ({ handleChange, values }) => {
       {/* Query Editor Section */}
       <Card>
         <CardTitle>SQL Query Editor</CardTitle>
-        <AIGenerationButton onSelectAIGeneration={getAlaSQLQueries}>
-          {({ generatedQuery, isSuggestionArrived }) => (
+        <AIGenerationButton onSelectAIGeneration={handleGetAlaSQLQueries}>
+          {() => (
             <QueryTextarea
-              value={
-                !isSuggestionArrived ? values.config?.sqlQuery : generatedQuery
-              }
+              value={values.config?.sqlQuery}
               name="config.sqlQuery"
               onChange={handleChange}
               placeholder="Enter your SQL query here..."

@@ -16,6 +16,7 @@ type Props = {
   values: Widget;
   widget?: Widget;
   handleChange: any;
+  setFieldValue: any;
 };
 
 const WidgetTabularView = (props: Props) => {

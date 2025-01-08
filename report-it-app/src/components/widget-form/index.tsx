@@ -79,7 +79,7 @@ const WidgetForm = ({ onCancel, onSubmit, onDelete, widget }: Props) => {
       validateOnBlur
       validate={handleValidation}
     >
-      {({ values, errors, handleChange, submitForm, dirty }) => (
+      {({ values, errors, handleChange, submitForm, dirty, setFieldValue }) => (
         <Form>
           <div style={{ paddingBottom: '16px' }}>
             <Spacings.Inline
@@ -119,6 +119,7 @@ const WidgetForm = ({ onCancel, onSubmit, onDelete, widget }: Props) => {
             values={values}
             widget={widget}
             handleChange={handleChange}
+            setFieldValue={setFieldValue}
           />
         </Form>
       )}
