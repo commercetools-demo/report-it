@@ -8,6 +8,9 @@ import SelectInput from '@commercetools-uikit/select-input';
 import FieldLabel from '@commercetools-uikit/field-label';
 import { useQueryUtils } from '../query/hooks/use-query-utils';
 import { useWidgetDatasourceResponseContext } from './widget-datasource-response-provider';
+import styled from 'styled-components';
+import { Chart as GoogleChart } from 'react-google-charts';
+
 type Props = {
   errors: FormikErrors<Widget>;
   values: Widget;
@@ -47,8 +50,13 @@ export const GoogleChartWrapperCharts = [
   'WordTree',
 ];
 
+const StyledDiv = styled.div`
+  width: 100%;
+  height: 300px;
+`;
+
 const WidgetChart = ({ values, handleChange }: Props) => {
-  const { executeQuery, flattenObject, queryResult, error } = useQueryUtils();
+  const { executeQuery, flattenObject, error } = useQueryUtils();
   const { datasources } = useWidgetDatasourceResponseContext();
 
   const headers = useMemo(() => {
@@ -63,6 +71,27 @@ const WidgetChart = ({ values, handleChange }: Props) => {
     }
     return [];
   }, [datasources, values]);
+
+  const chartData = useMemo(() => {
+    if (
+      Object.keys(datasources)?.length &&
+      values.config?.sqlQuery &&
+      headers
+    ) {
+      const result = executeQuery(values.config?.sqlQuery!);
+
+      const data = [];
+      data.push(headers.map((item) => item.value));
+
+      result.forEach((item: any) => {
+        const flatRow = flattenObject(item);
+        data.push(headers.map((item) => flatRow[item.value]));
+      });
+
+      return data;
+    }
+    return [];
+  }, [datasources, headers]);
 
   return (
     <Spacings.Stack>
@@ -95,6 +124,20 @@ const WidgetChart = ({ values, handleChange }: Props) => {
             onChange={handleChange}
           />
         </>
+      )}
+      {!!chartData?.length && (
+        <StyledDiv>
+          <FieldLabel title="Chart preview" />
+          <GoogleChart
+            //   @ts-ignore
+            chartType={values?.config?.chartType}
+            data={chartData}
+            options={{
+              title: values.name,
+            }}
+            legendToggle
+          />
+        </StyledDiv>
       )}
     </Spacings.Stack>
   );
