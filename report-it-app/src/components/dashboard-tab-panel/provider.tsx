@@ -20,6 +20,7 @@ interface ContextShape {
     widget?: Widget
   ) => Promise<WidgetResponse | undefined>;
   removeWidget: (widgetKey: string) => Promise<void>;
+  exportWidget: (widgetKey: string) => Promise<void>;
   refresh: () => Promise<void>;
   findWidget: (widgetKey?: string | null) => WidgetResponse | null;
 }
@@ -31,6 +32,7 @@ const DashboardPanelStateContext: Context<ContextShape> =
     addWidget: () => Promise.resolve(undefined),
     updateWidget: () => Promise.resolve(undefined),
     removeWidget: () => Promise.resolve(),
+    exportWidget: () => Promise.resolve(),
     refresh: () => Promise.resolve(),
     findWidget: () => null,
   });
@@ -41,9 +43,9 @@ export const DashboardPanelProvider = ({
 }: React.PropsWithChildren<{ dashboard: DashboardCustomObject }>) => {
   const [widgets, setWidgets] = useState<WidgetResponse[]>();
   const [isLoading, setIsLoading] = useState(false);
-  const { getWidgets } = useWidget();
   const { updateDashboard } = useDashboard();
-  const { createWidget, updateWidget, deleteWidget } = useWidget();
+  const { createWidget, updateWidget, deleteWidget, getWidgets, exportWidget } =
+    useWidget();
 
   const addWidget = async (
     widget?: Widget
@@ -67,6 +69,12 @@ export const DashboardPanelProvider = ({
       return;
     }
     await deleteWidget(widgetKey, dashboard.key);
+  };
+  const exportAWidget = async (widgetKey: string): Promise<void> => {
+    if (!widgetKey) {
+      return;
+    }
+    return exportWidget(widgetKey, dashboard.key);
   };
   const update = async (
     widgetKey: string,
@@ -103,6 +111,7 @@ export const DashboardPanelProvider = ({
         widgets,
         findWidget,
         addWidget,
+        exportWidget: exportAWidget,
         updateWidget: update,
         refresh: fetchWidgets,
         removeWidget,

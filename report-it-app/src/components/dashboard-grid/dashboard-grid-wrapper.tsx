@@ -24,8 +24,14 @@ const StyledWrapper = styled.div`
 `;
 
 const DashboardGridWrapper = () => {
-  const { addWidget, updateWidget, removeWidget, refresh, findWidget } =
-    useDashboardPanelStateContext();
+  const {
+    addWidget,
+    updateWidget,
+    removeWidget,
+    exportWidget,
+    refresh,
+    findWidget,
+  } = useDashboardPanelStateContext();
   const confirmState = useModalState();
   const showNotification = useShowNotification();
   const { setParam, clearParam, getParam } = useEasyParams();
@@ -74,6 +80,27 @@ const DashboardGridWrapper = () => {
       }
     }
   };
+  const handleExportWidget = async () => {
+    if (!selectedWidget) {
+      return;
+    }
+    const result = await exportWidget?.(selectedWidget.key);
+    const url = window.URL.createObjectURL(
+      new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' })
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `widget-${selectedWidget.key}.json`);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+
+    showNotification({
+      domain: NOTIFICATION_DOMAINS.SIDE,
+      kind: NOTIFICATION_KINDS_SIDE.success,
+      text: 'Widget exported successfully',
+    });
+  };
 
   const handleDeleteConfirmation = () => {
     if (!selectedWidget) {
@@ -115,6 +142,7 @@ const DashboardGridWrapper = () => {
           onSubmit={handleCreateWidget}
           onDelete={handleDeleteConfirmation}
           onCancel={closeModal}
+          onExport={handleExportWidget}
           widget={selectedWidget?.value ?? undefined}
         />
       </Drawer>

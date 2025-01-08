@@ -1,4 +1,4 @@
-import { DatasourceRef } from './datasource';
+import { Datasource, DatasourceRef } from './datasource';
 
 export interface WidgetLayout {
   x: number;
@@ -31,4 +31,15 @@ export interface WidgetResponse {
   createdAt: string;
   key: string;
   value?: Widget;
+}
+
+export interface ExportableWidget {
+  widget?: {
+    key: string;
+    value?: Widget;
+  };
+  datasources: {
+    key: string;
+    value?: Datasource;
+  }[];
 }

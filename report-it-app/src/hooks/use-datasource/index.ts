@@ -20,7 +20,7 @@ import { buildUrlWithParams, uniqueId } from '../../utils/utils';
 import { useWidget } from '../use-widget';
 import { useShowNotification } from '@commercetools-frontend/actions-global';
 
-const CONTAINER = `${APP_NAME}_datasources`;
+export const CONTAINER = `${APP_NAME}_datasources`;
 const DATASOURCES_KEY_PREFIX = 'datasource-';
 
 export const useDatasource = () => {

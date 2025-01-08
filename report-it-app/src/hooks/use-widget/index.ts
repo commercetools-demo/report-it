@@ -6,10 +6,12 @@ import {
 import { MC_API_PROXY_TARGETS } from '@commercetools-frontend/constants';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { APP_NAME } from '../../constants';
-import { Widget, WidgetResponse } from '../../types/widget';
+import { ExportableWidget, Widget, WidgetResponse } from '../../types/widget';
 import { buildUrlWithParams, uniqueId } from '../../utils/utils';
 import { PagedQueryResponse } from '../../types/general';
 import { useDashboard } from '../use-dashboard';
+import { CONTAINER as DATASOURCE_CONTAINER } from '../use-datasource';
+import { Datasource, DatasourceResponse } from '../../types/datasource';
 
 const CONTAINER = `${APP_NAME}_widgets`;
 const WIDGET_KEY_PREFIX = 'widget-';
@@ -23,6 +25,30 @@ export const useWidget = () => {
     TSdkAction,
     PagedQueryResponse<WidgetResponse>
   >();
+  const dispatchDatasourceRead = useAsyncDispatch<
+    TSdkAction,
+    PagedQueryResponse<DatasourceResponse>
+  >();
+
+  const getDatasources = async (
+    datasourceKeys?: string[]
+  ): Promise<DatasourceResponse[]> => {
+    if (!datasourceKeys || !datasourceKeys.length) {
+      return [] as DatasourceResponse[];
+    }
+    const result = await dispatchDatasourceRead(
+      actions.get({
+        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+        uri: buildUrlWithParams(`/${context?.project?.key}/custom-objects`, {
+          limit: '500',
+          where: `container="${DATASOURCE_CONTAINER}" and key in (${datasourceKeys
+            .map((key) => `"${key}"`)
+            .join(',')})`,
+        }),
+      })
+    );
+    return result.results;
+  };
 
   const createWidget = async (payload: Widget): Promise<WidgetResponse> => {
     const key = uniqueId(WIDGET_KEY_PREFIX);
@@ -72,6 +98,41 @@ export const useWidget = () => {
       })
     );
     return result;
+  };
+
+  const exportWidget = async (
+    widgetKey: string,
+    dashboardKey: string
+  ): Promise<ExportableWidget> => {
+    if (!widgetKey) {
+      return {} as ExportableWidget;
+    }
+    const jsonResp: ExportableWidget = {
+      widget: undefined,
+      datasources: [],
+    };
+    const widgetRes = await dispatchAppsAction(
+      actions.get({
+        mcApiProxyTarget: MC_API_PROXY_TARGETS.COMMERCETOOLS_PLATFORM,
+        uri: `/${context?.project?.key}/custom-objects/${CONTAINER}/${widgetKey}`,
+      })
+    );
+
+    jsonResp.widget = {
+      key: widgetKey,
+      value: widgetRes.value,
+    };
+
+    if (widgetRes.value?.config?.datasources?.length) {
+      const datasourcesRes = await getDatasources(
+        widgetRes.value.config.datasources.map((d) => d.key)
+      );
+      jsonResp.datasources = datasourcesRes.map((d) => ({
+        key: d.key,
+        value: d.value,
+      }));
+    }
+    return jsonResp;
   };
 
   const getWidgets = async (
@@ -150,6 +211,7 @@ export const useWidget = () => {
     deleteWidget,
     getWidget,
     getWidgets,
+    exportWidget,
     updateWidget,
     getWidgetsWithDatasource,
   };

@@ -1,7 +1,11 @@
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import IconButton from '@commercetools-uikit/icon-button';
-import { BinLinearIcon } from '@commercetools-uikit/icons';
+import {
+  BinLinearIcon,
+  ExportIcon,
+  ImportIcon,
+} from '@commercetools-uikit/icons';
 import Spacings from '@commercetools-uikit/spacings';
 import { Form, Formik } from 'formik';
 import { Widget } from '../../types/widget';
@@ -11,10 +15,17 @@ type Props = {
   onSubmit: (widget: Widget) => Promise<void>;
   onDelete: () => void;
   onCancel: () => void;
+  onExport: () => void;
   widget?: Widget;
 };
 
-const WidgetForm = ({ onCancel, onSubmit, onDelete, widget }: Props) => {
+const WidgetForm = ({
+  onCancel,
+  onSubmit,
+  onDelete,
+  onExport,
+  widget,
+}: Props) => {
   const handleValidation = (values: Widget) => {
     const errors: Record<keyof Widget, string | object> = {} as never;
     if (!values.name) {
@@ -104,9 +115,20 @@ const WidgetForm = ({ onCancel, onSubmit, onDelete, widget }: Props) => {
                   isDisabled={!dirty}
                 />
               </Spacings.Inline>
+
+              {!!widget && (
+                <IconButton
+                  label="Export"
+                  title="Export to JSON"
+                  onClick={onExport}
+                  icon={<ExportIcon size="small" />}
+                  type="button"
+                />
+              )}
               {!!widget && (
                 <IconButton
                   label="Delete"
+                  title="Delete widget"
                   onClick={onDelete}
                   icon={<BinLinearIcon size="small" />}
                   type="button"

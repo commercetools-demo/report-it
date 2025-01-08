@@ -74,7 +74,11 @@ type Props = {
 
 export const PREVIEW_ROWS = 5;
 
-const WidgetQuery: React.FC<Props> = ({ handleChange, values, setFieldValue }) => {
+const WidgetQuery: React.FC<Props> = ({
+  handleChange,
+  values,
+  setFieldValue,
+}) => {
   const { executeQuery, queryResult, error } = useQueryUtils();
   const { getAlaSQLQueries } = useOpenAI();
 
