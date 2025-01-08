@@ -17,6 +17,7 @@ import {
 } from '@commercetools-frontend/constants';
 import Text from '@commercetools-uikit/text';
 import { useEasyParams } from '../../hooks/use-params';
+import ImportWidgetButton from '../widget/import-widget-button';
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -130,6 +131,7 @@ const DashboardGridWrapper = () => {
       <StyledWrapper>
         <DashboardGrid onSelectWidget={openModal} />
         <NewWidgetButton openModal={openModal} />
+        <ImportWidgetButton />
       </StyledWrapper>
       <Drawer
         title={selectedWidget ? 'Edit widget' : 'Add widget'}
