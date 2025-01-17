@@ -1,22 +1,30 @@
-import { FieldArray, FormikErrors } from 'formik';
-import React, { useMemo } from 'react';
+import { FormikErrors } from 'formik';
+import { useMemo } from 'react';
 import { Widget } from '../../types/widget';
 import Text from '@commercetools-uikit/text';
 import Spacings from '@commercetools-uikit/spacings';
 import SelectField from '@commercetools-uikit/select-field';
-import SelectInput from '@commercetools-uikit/select-input';
 import FieldLabel from '@commercetools-uikit/field-label';
 import { useQueryUtils } from '../query/hooks/use-query-utils';
-import { useWidgetDatasourceResponseContext } from './widget-datasource-response-provider';
 import styled from 'styled-components';
-import { Chart as GoogleChart } from 'react-google-charts';
+import {
+  Chart as GoogleChart,
+  GoogleChartWrapperChartType,
+} from 'react-google-charts';
+import ChartFields from './chart-fields';
 
 type Props = {
   errors: FormikErrors<Widget>;
   values: Widget;
   widget?: Widget;
   handleChange: any;
+  setFieldValue: any;
 };
+
+export const StyledBorder = styled.div`
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 0;
+`;
 
 export const GoogleChartWrapperCharts = [
   'AnnotationChart',
@@ -55,43 +63,12 @@ const StyledDiv = styled.div`
   height: 300px;
 `;
 
-const WidgetChart = ({ values, handleChange }: Props) => {
-  const { executeQuery, flattenObject, error } = useQueryUtils();
-  const { datasources } = useWidgetDatasourceResponseContext();
+const WidgetChart = ({ values, handleChange, setFieldValue }: Props) => {
+  const { getChartData, error } = useQueryUtils();
 
-  const headers = useMemo(() => {
-    if (Object.keys(datasources)?.length && values?.config?.sqlQuery) {
-      const result = executeQuery(values.config?.sqlQuery!);
-      const flattenedFirstRow = flattenObject(result[0]);
-
-      return Object.keys(flattenedFirstRow).map((key) => ({
-        label: key,
-        value: key,
-      }));
-    }
-    return [];
-  }, [datasources, values]);
-
-  const chartData = useMemo(() => {
-    if (
-      Object.keys(datasources)?.length &&
-      values.config?.sqlQuery &&
-      headers
-    ) {
-      const result = executeQuery(values.config?.sqlQuery!);
-
-      const data = [];
-      data.push(headers.map((item) => item.value));
-
-      result.forEach((item: any) => {
-        const flatRow = flattenObject(item);
-        data.push(headers.map((item) => flatRow[item.value]));
-      });
-
-      return data;
-    }
-    return [];
-  }, [datasources, headers]);
+  const { chartData, headers } = useMemo(() => {
+    return getChartData(values.config?.sqlQuery!, values.config?.chartFields);
+  }, [values.config?.chartFields]);
 
   return (
     <Spacings.Stack>
@@ -113,27 +90,27 @@ const WidgetChart = ({ values, handleChange }: Props) => {
         </Text.Caption>
       )}
       {!!headers?.length && (
-        <>
-          <FieldLabel title="Chart Fields" />
-          <SelectInput
-            value={values?.config?.chartFields}
-            isMulti
-            options={headers}
-            optionStyle="checkbox"
-            name="config.chartFields"
+        <Spacings.Stack>
+          <FieldLabel title="Chart fields" />
+          {/* TODO: refresh chart when this changes */}
+          <ChartFields
+            defaultValues={headers}
+            config={values?.config}
+            configName="config"
             onChange={handleChange}
           />
-        </>
+        </Spacings.Stack>
       )}
+      <StyledBorder />
       {!!chartData?.length && (
         <StyledDiv>
           <FieldLabel title="Chart preview" />
           <GoogleChart
-            //   @ts-ignore
-            chartType={values?.config?.chartType}
+            chartType={values?.config?.chartType as GoogleChartWrapperChartType}
             data={chartData}
             options={{
               title: values.name,
+              colors: values?.config?.colors,
             }}
             legendToggle
           />

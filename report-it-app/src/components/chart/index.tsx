@@ -1,14 +1,21 @@
 import Text from '@commercetools-uikit/text';
 import { useMemo } from 'react';
-import { Chart as GoogleChart } from 'react-google-charts';
+import {
+  Chart as GoogleChart,
+  GoogleChartWrapperChartType,
+} from 'react-google-charts';
 import styled from 'styled-components';
 import { useQueryUtils } from '../query/hooks/use-query-utils';
 import { useWidgetDatasourceResponseContext } from '../widget-form/widget-datasource-response-provider';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import { ChartFieldItem } from '../../types/widget';
 
 type Props = {
   chartType: string;
-  chartFields: string[];
+  xAxis: string;
+  yAxis: string;
+  chartFields: ChartFieldItem[];
+  colors: string[];
   sqlQuery: string;
   name?: string;
 };
@@ -18,26 +25,20 @@ const StyledDiv = styled.div`
   height: 100%;
 `;
 
-const Chart = ({ chartType, chartFields, sqlQuery, name }: Props) => {
-  const { executeQuery, flattenObject } = useQueryUtils();
-  const { datasources } = useWidgetDatasourceResponseContext();
+const Chart = ({
+  chartType,
+  colors,
+  xAxis,
+  yAxis,
+  sqlQuery,
+  name,
+  chartFields,
+}: Props) => {
+  const { getChartData } = useQueryUtils();
 
-  const chartData = useMemo(() => {
-    if (Object.keys(datasources)?.length && sqlQuery) {
-      const result = executeQuery(sqlQuery!);
-
-      const data = [];
-      data.push(chartFields.map((key) => key));
-
-      result.forEach((item: any) => {
-        const flatRow = flattenObject(item);
-        data.push(chartFields.map((key) => flatRow[key]));
-      });
-
-      return data;
-    }
-    return [];
-  }, [datasources]);
+  const { chartData, headers } = useMemo(() => {
+    return getChartData(sqlQuery!, chartFields);
+  }, []);
 
   if (!chartData.length) {
     return (
@@ -52,11 +53,11 @@ const Chart = ({ chartType, chartFields, sqlQuery, name }: Props) => {
   return (
     <StyledDiv>
       <GoogleChart
-        //   @ts-ignore
-        chartType={chartType}
+        chartType={chartType as GoogleChartWrapperChartType}
         data={chartData}
         options={{
           title: name,
+          colors: colors,
         }}
         legendToggle
       />

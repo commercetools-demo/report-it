@@ -9,12 +9,21 @@ export interface WidgetLayout {
   i: string;
 }
 
+export interface ChartFieldItem {
+  key: string;
+  type: string;
+  label: string;
+  enabled?: boolean;
+}
 export interface Widget {
   name: string;
   config?: {
     [key: string]: any;
     chartType: string;
-    chartFields: string[];
+    chartFields: ChartFieldItem[];
+    colors: string[];
+    xAxis: string;
+    yAxis: string;
     sqlQuery: string;
     datasources: DatasourceRef[];
   };

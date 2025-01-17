@@ -42,12 +42,7 @@ const Widget = ({ widget }: Props) => {
     <WidgetDatasourceResponseProvider
       availableDatasourceKeys={value.config.datasources.map((d) => d.key)}
     >
-      <Chart
-        chartType={value.config.chartType}
-        chartFields={value.config.chartFields}
-        sqlQuery={value.config.sqlQuery}
-        name={value.name}
-      />
+      <Chart {...value.config} name={value.name} />
     </WidgetDatasourceResponseProvider>
   );
 };
