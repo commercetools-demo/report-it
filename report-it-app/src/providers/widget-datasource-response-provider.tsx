@@ -12,7 +12,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { useDatasource } from '../../hooks/use-datasource';
+import { useDatasource } from '../hooks/use-datasource';
 
 export interface ContextShape {
   datasources: Record<string, { results: any[] }>;

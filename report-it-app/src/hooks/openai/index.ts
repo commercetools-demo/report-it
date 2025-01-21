@@ -5,7 +5,7 @@ import {
 } from '@commercetools-frontend/constants';
 import OpenAI from 'openai';
 import { useQueryUtils } from '../../components/query/hooks/use-query-utils';
-import { useWidgetDatasourceResponseContext } from '../../components/widget-form/widget-datasource-response-provider';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import { useOpenAiConfigurationContext } from '../../providers/open-ai';
 
 export const useOpenAI = () => {

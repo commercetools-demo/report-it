@@ -1,6 +1,6 @@
 import { WidgetResponse } from '../../types/widget';
 import Chart from '../chart';
-import WidgetDatasourceResponseProvider from '../widget-form/widget-datasource-response-provider';
+import WidgetDatasourceResponseProvider from '../../providers/widget-datasource-response-provider';
 import Text from '@commercetools-uikit/text';
 
 type Props = {

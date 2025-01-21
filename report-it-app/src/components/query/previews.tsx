@@ -1,7 +1,7 @@
 import CollapsibleMotion from '@commercetools-uikit/collapsible-motion';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import styled from 'styled-components';
-import { useWidgetDatasourceResponseContext } from '../widget-form/widget-datasource-response-provider';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import { useQueryUtils } from './hooks/use-query-utils';
 import { SchemaView } from './schema-view';
 import { TablePreview } from './table-preview';

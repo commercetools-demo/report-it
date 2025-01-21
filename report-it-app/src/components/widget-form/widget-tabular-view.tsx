@@ -7,7 +7,7 @@ import { TabPanels } from '../tab/panels';
 import WidgetDatasource from './widget-datasource';
 import DatasourceStateProvider from '../datasource/provider';
 import WidgetQuery from '../query';
-import WidgetDatasourceResponseProvider from './widget-datasource-response-provider';
+import WidgetDatasourceResponseProvider from '../../providers/widget-datasource-response-provider';
 import WidgetChart from './widget-chart';
 import { useMemo, useState } from 'react';
 

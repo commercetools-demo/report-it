@@ -1,7 +1,7 @@
 import alasql from 'alasql';
 import get from 'lodash.get';
 import { useState } from 'react';
-import { useWidgetDatasourceResponseContext } from '../../widget-form/widget-datasource-response-provider';
+import { useWidgetDatasourceResponseContext } from '../../../providers/widget-datasource-response-provider';
 import { ChartFieldItem } from '../../../types/widget';
 
 export const useQueryUtils = () => {
@@ -97,11 +97,7 @@ export const useQueryUtils = () => {
       const result = executeQuery(sqlQuery!);
       const flattenedFirstRow = flattenObject(result[0]);
 
-      console.log('chartFields', chartFields);
-
       headers.push(...Object.keys(flattenedFirstRow));
-      console.log('headers', headers);
-
       chartData.push(chartFields?.filter((field) => field.enabled));
 
       result.forEach((item: any) => {
