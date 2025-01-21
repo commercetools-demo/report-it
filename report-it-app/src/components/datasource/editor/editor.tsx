@@ -1,21 +1,11 @@
 import 'graphiql/graphiql.css';
 import './graphiql-overrides.css';
-import { useCallback, useMemo } from 'react';
-import { type FetcherOpts, type FetcherParams } from '@graphiql/toolkit';
+import { useMemo } from 'react';
 import { GraphiQL } from 'graphiql';
-import {
-  buildApiUrl,
-  executeHttpClientRequest,
-} from '@commercetools-frontend/application-shell';
-import type {
-  TGraphQLTargets,
-  ApplicationWindow,
-} from '@commercetools-frontend/constants';
-import createHttpUserAgent from '@commercetools/http-user-agent';
+import type { TGraphQLTargets } from '@commercetools-frontend/constants';
 import explorerPlugin from './plugin-explorer';
 import QueryContext from './query-context';
-
-declare let window: ApplicationWindow;
+import { useGraphQlFetcher } from '../../../hooks/use-graph-ql-fetcher';
 
 type TEditorProps = {
   target: TGraphQLTargets;
@@ -23,40 +13,6 @@ type TEditorProps = {
   variables: string;
   onUpdateQuery: (query: string) => void;
   onUpdateVariables: (variables: string) => void;
-};
-
-const userAgent = createHttpUserAgent({
-  name: 'fetch-client',
-  libraryName: window.app.applicationName,
-});
-
-const graphqlFetcher = async (
-  graphQLParams: FetcherParams,
-  fetcherOpts?: FetcherOpts
-) => {
-  const data = await executeHttpClientRequest(
-    async (options) => {
-      const res = await fetch(buildApiUrl('/graphql'), {
-        ...options,
-        method: 'POST',
-        body: JSON.stringify(graphQLParams),
-      });
-      const data = res.json();
-      return {
-        data,
-        statusCode: res.status,
-        getHeader: (key) => res.headers.get(key),
-      };
-    },
-    {
-      userAgent,
-      headers: {
-        'content-type': 'application/json',
-        ...fetcherOpts?.headers,
-      },
-    }
-  );
-  return data;
 };
 
 const Editor = ({
@@ -67,17 +23,8 @@ const Editor = ({
   onUpdateVariables,
 }: TEditorProps) => {
   const context = useMemo(() => ({ query, setQuery: onUpdateQuery }), [query]);
-  const fetcher = useCallback(
-    (graphQLParams: FetcherParams, fetcherOpts?: FetcherOpts) =>
-      graphqlFetcher(graphQLParams, {
-        ...fetcherOpts,
-        headers: {
-          'X-GraphQL-Target': target,
-        },
-      }),
-    [target]
-  );
 
+  const { fetcher } = useGraphQlFetcher();
   return (
     <QueryContext.Provider value={context}>
       <GraphiQL
@@ -87,6 +34,8 @@ const Editor = ({
         onEditVariables={onUpdateVariables}
         variables={variables}
         plugins={[explorerPlugin]}
+        maxHistoryLength={0}
+        disableTabs
       />
     </QueryContext.Provider>
   );

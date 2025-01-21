@@ -1,8 +1,8 @@
-import { createContext, type Dispatch, type SetStateAction } from 'react';
+import { createContext } from 'react';
 
 type QueryContextType = {
   query: string;
-  setQuery: Dispatch<SetStateAction<string>>;
+  setQuery: (query: string) => void;
 };
 
 const QueryContext = createContext<QueryContextType>({
