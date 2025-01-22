@@ -10,6 +10,7 @@ import Spacings from '@commercetools-uikit/spacings';
 import { Form, Formik } from 'formik';
 import { Widget } from '../../types/widget';
 import WidgetTabularView from './widget-tabular-view';
+import cronstrue from 'cronstrue';
 
 type Props = {
   onSubmit: (widget: Widget) => Promise<void>;
@@ -79,13 +80,27 @@ const WidgetForm = ({
         y: 'Must be bigger than 0',
       };
     }
+    if (values.csvExportConfig?.enabled) {
+      if (!values.csvExportConfig?.schedule) {
+        try {
+          cronstrue.toString(values?.csvExportConfig?.schedule || '');
+        } catch (e) {
+          errors.csvExportConfig = {
+            ...((errors.csvExportConfig as object) ?? {}),
+            schedule: 'Invalid cron expression',
+          };
+        }
+      }
+    }
 
     return errors;
   };
 
   return (
     <Formik
-      initialValues={widget ?? ({ layout: {} } as Widget)}
+      initialValues={
+        widget ?? ({ layout: {}, csvExportConfig: { csv: true } } as Widget)
+      }
       onSubmit={onSubmit}
       validateOnBlur
       validate={handleValidation}

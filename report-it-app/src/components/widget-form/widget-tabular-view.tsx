@@ -10,6 +10,7 @@ import WidgetQuery from '../query';
 import WidgetDatasourceResponseProvider from '../../providers/widget-datasource-response-provider';
 import WidgetChart from './widget-chart';
 import { useMemo, useState } from 'react';
+import WidgetCSVExport from './widget-csv-export';
 
 type Props = {
   errors: FormikErrors<Widget>;
@@ -38,12 +39,14 @@ const WidgetTabularView = (props: Props) => {
               <span>Select Datasource</span>
               <span>Write query</span>
               <span>Chart</span>
+              <span>CSV Export</span>
             </Tabs>
             <TabPanels selectedTab={selectedTab}>
               <WidgetMainInfo {...props} />
               <WidgetDatasource {...props} />
               <WidgetQuery {...props} />
               <WidgetChart {...props} />
+              <WidgetCSVExport {...props} />
             </TabPanels>
           </WidgetDatasourceResponseProvider>
         )}

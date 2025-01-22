@@ -28,6 +28,17 @@ export interface Widget {
     datasources: DatasourceRef[];
   };
   layout: WidgetLayout;
+  csvExportConfig?: {
+    enabled: boolean;
+    url?: string;
+    schedule?: string;
+    json?: boolean;
+    csv?: boolean;
+    history?: {
+      text: string;
+      date: string;
+    }[];
+  };
 }
 
 export interface WidgetRef {

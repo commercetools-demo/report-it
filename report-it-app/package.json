@@ -79,6 +79,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/testing-library__jest-dom": "^5.14.9",
     "alasql": "^4.5.2",
+    "cronstrue": "^2.53.0",
     "eslint": "8.57.0",
     "eslint-formatter-pretty": "4.1.0",
     "eslint-plugin-graphql": "^4.0.0",
