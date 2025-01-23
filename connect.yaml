@@ -1,5 +1,5 @@
 deployAs:
-  - name: report-it-app 
+  - name: report-it-app
     applicationType: merchant-center-custom-application
     configuration:
       standardConfiguration:
@@ -11,12 +11,37 @@ deployAs:
           required: true
         - key: ENTRY_POINT_URI_PATH
           description: The Application entry point URI path
+          default: custom-object-editor
           required: true
-          default: 'custom-object-editor'
         - key: INITIAL_PROJECT_KEY
           description: development project key
           required: true
         - key: CLOUD_IDENTIFIER
           description: one of the following gcp-us, gcp-eu, aws-us, aws-eu
+          default: gcp-us
           required: false
-          default: 'gcp-us'
+      securedConfiguration: []
+  - name: csv-exporter
+    applicationType: job
+    endpoint: /csv-exporter
+    properties:
+      schedule: "*/5 * * * *"
+    configuration:
+      standardConfiguration:
+        - key: CTP_REGION
+          description: commercetools Composable Commerce API region
+          required: true
+          default: "us-central1.gcp"
+        - key: CTP_PROJECT_KEY
+          description: commercetools Composable Commerce project key
+          required: true
+        - key: CTP_CLIENT_ID
+          description: commercetools Composable Commerce client ID
+          required: true
+        - key: CTP_SCOPE
+          description: commercetools Composable Commerce client scope
+          required: true
+      securedConfiguration:
+        - key: CTP_CLIENT_SECRET
+          description: commercetools Composable Commerce client secret
+          required: true
