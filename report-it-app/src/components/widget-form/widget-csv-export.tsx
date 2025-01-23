@@ -8,6 +8,7 @@ import FieldLabel from '@commercetools-uikit/field-label';
 import ToggleInput from '@commercetools-uikit/toggle-input';
 import Text from '@commercetools-uikit/text';
 import cronstrue from 'cronstrue';
+import DataTable from '@commercetools-uikit/data-table';
 
 type Props = {
   errors: FormikErrors<Widget>;
@@ -74,9 +75,9 @@ const WidgetCSVExport = ({
                   onChange={handleChange}
                 />
               </Spacings.Inline>
-              {errors?.csvExportConfig?.schedule && (
+              {(errors?.csvExportConfig as any)?.schedule && (
                 <Text.Caption tone="warning">
-                  {errors?.csvExportConfig?.schedule}
+                  {(errors?.csvExportConfig as any)?.schedule}
                 </Text.Caption>
               )}
             </Grid.Item>
@@ -108,6 +109,33 @@ const WidgetCSVExport = ({
                 </Spacings.Stack>
               </Spacings.Inline>
             </Grid.Item>
+            {!!values?.csvExportConfig?.history?.length && (
+              <Grid.Item gridColumn="span 2">
+                <Spacings.Stack scale="m">
+                  <FieldLabel title="Execution History"></FieldLabel>
+                  <DataTable
+                    isCondensed
+                    columns={[
+                      {
+                        key: 'text',
+                        label: 'Message',
+                      },
+                      {
+                        key: 'date',
+                        label: 'Date',
+                        renderItem: (row: any) => (
+                          <Text.Body>
+                            {new Date(row.date).toLocaleString()}
+                          </Text.Body>
+                        ),
+                      },
+                    ]}
+                    rows={values?.csvExportConfig?.history}
+                  />
+                </Spacings.Stack>
+
+              </Grid.Item>
+            )}
           </Grid>
         </Grid.Item>
       </Grid>
