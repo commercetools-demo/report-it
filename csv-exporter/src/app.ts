@@ -18,7 +18,7 @@ const app: Express = express();
 app.disable('x-powered-by');
 
 // Define routes
-app.use('/job', JobRoutes);
+app.use('/csv-exporter', JobRoutes);
 app.use('*', () => {
   throw new CustomError(404, 'Path not found.');
 });
