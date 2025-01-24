@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FormikErrors } from 'formik';
 import { Widget } from '../../types/widget';
-import { useQueryUtils } from './hooks/use-query-utils';
+import { useQueryUtils } from '../../hooks/use-query-utils';
 import { TablePreview } from './table-preview';
 import Previews from './previews';
 import PrimaryButton from '@commercetools-uikit/primary-button';

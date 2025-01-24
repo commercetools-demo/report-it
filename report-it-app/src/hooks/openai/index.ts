@@ -4,7 +4,7 @@ import {
   NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
 import OpenAI from 'openai';
-import { useQueryUtils } from '../../components/query/hooks/use-query-utils';
+import { useQueryUtils } from '../use-query-utils';
 import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import { useOpenAiConfigurationContext } from '../../providers/open-ai';
 

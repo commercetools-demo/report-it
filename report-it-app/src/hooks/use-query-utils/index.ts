@@ -1,8 +1,8 @@
 import alasql from 'alasql';
 import get from 'lodash.get';
 import { useState } from 'react';
-import { useWidgetDatasourceResponseContext } from '../../../providers/widget-datasource-response-provider';
-import { ChartFieldItem } from '../../../types/widget';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
+import { ChartFieldItem } from '../../types/widget';
 
 export const useQueryUtils = () => {
   const [queryResult, setQueryResult] = useState<any[] | null>(null);

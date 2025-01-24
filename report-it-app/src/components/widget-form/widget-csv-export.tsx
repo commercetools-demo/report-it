@@ -133,7 +133,6 @@ const WidgetCSVExport = ({
                     rows={values?.csvExportConfig?.history}
                   />
                 </Spacings.Stack>
-
               </Grid.Item>
             )}
           </Grid>

@@ -5,7 +5,7 @@ import Text from '@commercetools-uikit/text';
 import Spacings from '@commercetools-uikit/spacings';
 import SelectField from '@commercetools-uikit/select-field';
 import FieldLabel from '@commercetools-uikit/field-label';
-import { useQueryUtils } from '../query/hooks/use-query-utils';
+import { useQueryUtils } from '../../hooks/use-query-utils';
 import styled from 'styled-components';
 import {
   Chart as GoogleChart,

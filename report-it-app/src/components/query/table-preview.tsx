@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { PREVIEW_ROWS } from '.';
-import { useQueryUtils } from './hooks/use-query-utils';
+import { useQueryUtils } from '../../hooks/use-query-utils';
 import DataTable from '@commercetools-uikit/data-table';
 
 const TableTitle = styled.h3`

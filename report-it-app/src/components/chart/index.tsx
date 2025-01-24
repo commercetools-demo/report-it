@@ -5,7 +5,7 @@ import {
   GoogleChartWrapperChartType,
 } from 'react-google-charts';
 import styled from 'styled-components';
-import { useQueryUtils } from '../query/hooks/use-query-utils';
+import { useQueryUtils } from '../../hooks/use-query-utils';
 import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { ChartFieldItem } from '../../types/widget';
