@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import Spacings from '@commercetools-uikit/spacings';
 import Dashboard from './components/dashboard';
-import Configuration from './components/configuration';
 import { OpenAIConfigurationProvider } from './providers/open-ai';
 
 type ApplicationRoutesProps = {
@@ -26,9 +25,6 @@ const ApplicationRoutes = (_props: ApplicationRoutesProps) => {
     <OpenAIConfigurationProvider>
       <Spacings.Inset scale="l">
         <Switch>
-          <Route path={`${match.path}/configuration`}>
-            <Configuration linkToParent={match.url} />
-          </Route>
           <Route>
             <Dashboard linkToParent={match.url} />
           </Route>
