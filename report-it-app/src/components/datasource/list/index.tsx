@@ -8,6 +8,7 @@ type Props = {
   selectedRows?: string[];
   onSelect?: (keys: string[]) => void;
   hideCheckbox?: boolean;
+  checkboxLabel?: string;
 };
 
 const DatasourceList = ({
@@ -15,6 +16,7 @@ const DatasourceList = ({
   refreshData,
   selectedRows,
   hideCheckbox,
+  checkboxLabel,
   onSelect,
 }: Props) => {
   return (
@@ -24,6 +26,7 @@ const DatasourceList = ({
       selectedRows={selectedRows}
       onSelect={onSelect}
       hideCheckbox={hideCheckbox}
+      checkboxLabel={checkboxLabel}
     />
   );
 };

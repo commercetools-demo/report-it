@@ -14,10 +14,11 @@ import { Widget } from '../../../types/widget';
 interface Props {
   onSelect?: (keys: string[]) => void;
   widget?: Widget;
+  values?: Widget;
 }
-const AddFromDatasources = ({ onSelect, widget }: Props) => {
+const AddFromDatasources = ({ onSelect, values }: Props) => {
   const drawerState = useModalState();
-  const selectedDatasources = widget?.config?.datasources?.map((d) => d.key);
+  const selectedDatasources = values?.config?.datasources?.map((d) => d.key);
 
   return (
     <>

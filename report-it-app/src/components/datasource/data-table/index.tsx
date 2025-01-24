@@ -1,5 +1,5 @@
 import Constraints from '@commercetools-uikit/constraints';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Drawer,
   useModalState,
@@ -30,12 +30,14 @@ interface Props {
   refreshData?: () => void;
   onSelect?: (keys: string[]) => void;
   hideCheckbox?: boolean;
+  checkboxLabel?: string;
 }
 
 const DatasourceDataTable = ({
   selectedRows,
   datasources,
   hideCheckbox,
+  checkboxLabel = '',
   refreshData,
   onSelect,
 }: Props) => {
@@ -54,9 +56,9 @@ const DatasourceDataTable = ({
     return [
       {
         key: 'checkbox',
-        label: '',
+        label: checkboxLabel,
         shouldIgnoreRowClick: true,
-        align: 'center',
+        align: 'left',
         renderItem: (row: DatasourceResponse) => (
           <CheckboxInput
             isChecked={checkedRowsState[row.key]}
@@ -119,6 +121,17 @@ const DatasourceDataTable = ({
     setSelectedDatasourceResponse(datasource);
     drawerState.openModal();
   };
+
+  useEffect(() => {
+    setCheckedRowsState((prev) => {
+      return selectedRows?.length
+        ? {
+            ...prev,
+            ...selectedRows.reduce((obj, key) => ({ ...obj, [key]: true }), {}),
+          }
+        : prev;
+    });
+  }, [selectedRows]);
 
   return (
     <Constraints.Horizontal max={'scale'}>

@@ -22,7 +22,11 @@ const Datasource: React.FC<Props> = ({ values, widget, onSelect }) => {
       <SelectedDatasources values={values} widget={widget} />
       <Spacer />
       <Spacings.Inline scale="xl">
-        <AddFromDatasources onSelect={onSelect} widget={widget} />
+        <AddFromDatasources
+          onSelect={onSelect}
+          widget={widget}
+          values={values}
+        />
       </Spacings.Inline>
     </Spacings.Stack>
   );

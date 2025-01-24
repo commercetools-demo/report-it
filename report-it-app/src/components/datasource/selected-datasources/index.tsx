@@ -11,7 +11,12 @@ type Props = {
 };
 
 const SelectedDatasources: React.FC<Props> = ({ values, widget, onSelect }) => {
-  const selectedDatasources = values?.config?.datasources?.map((d) => d.key);
+  const savedDatasources = widget?.config?.datasources?.map((d) => d.key);
+  const currentDatasources = values?.config?.datasources?.map((d) => d.key);
+  const newDatasources = currentDatasources?.filter(
+    (d) => !savedDatasources?.includes(d)
+  );
+
   const { datasources, refreshData, isLoading } = useDatasourceStateContext();
 
   const filteredDatasources = useMemo(() => {
@@ -21,10 +26,10 @@ const SelectedDatasources: React.FC<Props> = ({ values, widget, onSelect }) => {
     return {
       ...datasources,
       results: datasources.results.filter((datasource) =>
-        selectedDatasources?.includes(datasource.key)
+        currentDatasources?.includes(datasource.key)
       ),
     };
-  }, [selectedDatasources, datasources]);
+  }, [currentDatasources, datasources]);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -38,9 +43,9 @@ const SelectedDatasources: React.FC<Props> = ({ values, widget, onSelect }) => {
     <DatasourceList
       datasources={filteredDatasources}
       refreshData={refreshData}
-      selectedRows={selectedDatasources}
+      selectedRows={newDatasources}
       onSelect={onSelect}
-      hideCheckbox
+      checkboxLabel="Will be added"
     />
   );
 };
