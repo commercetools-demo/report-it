@@ -27,15 +27,15 @@ const NewDatasource = () => {
     <>
       <PrimaryButton
         iconLeft={<PlusBoldIcon />}
-        label="Add new datasource"
+        label="Create a new datasource"
         onClick={drawerState.openModal}
       />
       <Drawer
-        title="Add new datasource"
+        title="Create a new datasource"
         isOpen={drawerState.isModalOpen}
         onClose={drawerState.closeModal}
         hideControls
-        size={30}
+        size={20}
       >
         <DatasourceForm
           onSubmit={handleCreateDatasource}

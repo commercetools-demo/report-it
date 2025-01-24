@@ -2,16 +2,16 @@ import React, { useMemo } from 'react';
 import { useDatasourceStateContext } from '../provider';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import DatasourceList from '../list';
+import { Widget } from '../../../types/widget';
 
 type Props = {
-  selectedDatasources?: string[];
+  values: Widget;
+  widget?: Widget;
   onSelect?: (keys: string[]) => void;
 };
 
-const SelectedDatasources: React.FC<Props> = ({
-  selectedDatasources,
-  onSelect,
-}) => {
+const SelectedDatasources: React.FC<Props> = ({ values, widget, onSelect }) => {
+  const selectedDatasources = values?.config?.datasources?.map((d) => d.key);
   const { datasources, refreshData, isLoading } = useDatasourceStateContext();
 
   const filteredDatasources = useMemo(() => {

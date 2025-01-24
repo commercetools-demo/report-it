@@ -13,7 +13,8 @@ const WidgetDatasource = ({ errors, values, handleChange, widget }: Props) => {
   return (
     <div>
       <Datasource
-        selectedDatasources={widget?.config?.datasources?.map((d) => d.key)}
+        widget={widget}
+        values={values}
         onSelect={(keys: string[]) => {
           handleChange({
             target: {

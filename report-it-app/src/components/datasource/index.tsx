@@ -1,9 +1,9 @@
-import NewDatasource from './new-datasource';
 import Spacings from '@commercetools-uikit/spacings';
 import Text from '@commercetools-uikit/text';
-import AllDatasources from './all-datasources';
 import SelectedDatasources from './selected-datasources';
 import styled from 'styled-components';
+import AddFromDatasources from './add-from-datasources';
+import { Widget } from '../../types/widget';
 
 const Spacer = styled.div`
   height: 1rem;
@@ -11,25 +11,19 @@ const Spacer = styled.div`
 `;
 
 interface Props {
-  selectedDatasources?: string[];
+  values: Widget;
+  widget?: Widget;
   onSelect?: (keys: string[]) => void;
 }
-const Datasource: React.FC<Props> = ({ selectedDatasources, onSelect }) => {
+const Datasource: React.FC<Props> = ({ values, widget, onSelect }) => {
   return (
     <Spacings.Stack scale="xl">
       <Text.Headline>Selected datasources for this Widget</Text.Headline>
-      <SelectedDatasources selectedDatasources={selectedDatasources} />
+      <SelectedDatasources values={values} widget={widget} />
       <Spacer />
-      <Spacings.Stack scale="l">
-        <Text.Headline>Pick from all Datasources</Text.Headline>
-        <AllDatasources
-          selectedDatasources={selectedDatasources}
-          onSelect={onSelect}
-        />
-        <Spacings.Inline justifyContent="space-between">
-          <NewDatasource />
-        </Spacings.Inline>
-      </Spacings.Stack>
+      <Spacings.Inline scale="xl">
+        <AddFromDatasources onSelect={onSelect} widget={widget} />
+      </Spacings.Inline>
     </Spacings.Stack>
   );
 };
