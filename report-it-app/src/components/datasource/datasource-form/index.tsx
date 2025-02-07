@@ -13,6 +13,7 @@ import { useOpenAI } from '../../../hooks/openai';
 import { Datasource } from '../../../types/datasource';
 import AIGenerationButton from '../../ai-generation/ai-generation-button';
 import Editor from '../editor';
+import { designTokens } from '@commercetools-uikit/design-system';
 
 type Props = {
   onSubmit: (datasource: Datasource) => Promise<void>;
@@ -103,7 +104,7 @@ const DatasourceForm = ({
             </Spacings.Inline>
           </div>
           <Grid
-            gridGap="16px"
+            gridGap={designTokens.spacingM}
             gridTemplateColumns="repeat(2, 1fr)"
             gridAutoColumns="1fr"
           >

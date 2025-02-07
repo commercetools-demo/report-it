@@ -12,13 +12,13 @@ import {
   GoogleChartWrapperChartType,
 } from 'react-google-charts';
 import ChartFields from './chart-fields';
+import { TCustomEvent } from '@commercetools-uikit/select-field/dist/declarations/src/select-field';
 
 type Props = {
   errors: FormikErrors<Widget>;
   values: Widget;
   widget?: Widget;
-  handleChange: any;
-  setFieldValue: any;
+  handleChange: (event: TCustomEvent) => void;
 };
 
 export const StyledBorder = styled.div`
@@ -63,7 +63,7 @@ const StyledDiv = styled.div`
   height: 300px;
 `;
 
-const WidgetChart = ({ values, handleChange, setFieldValue }: Props) => {
+const WidgetChart = ({ values, handleChange }: Props) => {
   const { getChartData, error } = useQueryUtils();
 
   const { chartData, headers } = useMemo(() => {

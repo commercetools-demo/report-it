@@ -1,11 +1,7 @@
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import IconButton from '@commercetools-uikit/icon-button';
-import {
-  BinLinearIcon,
-  ExportIcon,
-  ImportIcon,
-} from '@commercetools-uikit/icons';
+import { BinLinearIcon, ExportIcon } from '@commercetools-uikit/icons';
 import Spacings from '@commercetools-uikit/spacings';
 import { Form, Formik } from 'formik';
 import { Widget } from '../../types/widget';
@@ -107,30 +103,23 @@ const WidgetForm = ({
     >
       {({ values, errors, handleChange, submitForm, dirty, setFieldValue }) => (
         <Form>
-          <div style={{ paddingBottom: '16px' }}>
+          <Spacings.Stack scale={'m'}>
             <Spacings.Inline
               alignItems="center"
               justifyContent="flex-end"
-              scale="m"
+              scale="s"
             >
-              <Spacings.Inline
-                alignItems="center"
-                justifyContent="flex-end"
-                scale="m"
-              >
-                <SecondaryButton
-                  label="Cancel"
-                  onClick={onCancel}
-                  type="button"
-                />
-                <PrimaryButton
-                  label="Save"
-                  onClick={submitForm}
-                  type="button"
-                  isDisabled={!dirty}
-                />
-              </Spacings.Inline>
-
+              <SecondaryButton
+                label="Cancel"
+                onClick={onCancel}
+                type="button"
+              />
+              <PrimaryButton
+                label="Save"
+                onClick={submitForm}
+                type="button"
+                isDisabled={!dirty}
+              />
               {!!widget && (
                 <IconButton
                   label="Export"
@@ -150,7 +139,7 @@ const WidgetForm = ({
                 />
               )}
             </Spacings.Inline>
-          </div>
+          </Spacings.Stack>
           <WidgetTabularView
             errors={errors}
             values={values}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { type ChangeEventHandler, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { DragIcon, BinLinearIcon } from '@commercetools-uikit/icons';
 import TextField from '@commercetools-uikit/text-field';
@@ -6,12 +6,12 @@ import ToggleInput from '@commercetools-uikit/toggle-input';
 import FieldLabel from '@commercetools-uikit/field-label';
 import IconButton from '@commercetools-uikit/icon-button';
 import SelectField from '@commercetools-uikit/select-field';
-import { ChartFieldItem, Widget } from '../../types/widget';
+import { Widget } from '../../types/widget';
 import { FieldArray } from 'formik';
 import Spacings from '@commercetools-uikit/spacings';
 
 type Props = {
-  onChange: any;
+  onChange: ChangeEventHandler<HTMLInputElement>;
   config?: Widget['config'];
   configName: string;
   defaultValues: string[];
@@ -92,7 +92,7 @@ const DraggableList = ({
 
   return (
     <FieldArray name={name}>
-      {({ insert, remove, push, move }) => (
+      {({ remove, push, move }) => (
         <div>
           {config?.chartFields?.map((item, index) => (
             <StyledDraggableItem
@@ -156,6 +156,7 @@ const DraggableList = ({
                       isChecked={item.enabled}
                       name={`${name}.${index}.enabled`}
                       onChange={onChange}
+                      size={'small'}
                     />
                   </Spacings.Stack>
                   <IconButton

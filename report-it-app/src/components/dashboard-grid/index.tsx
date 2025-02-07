@@ -63,7 +63,7 @@ const DashboardGrid = ({
               onSelectWidget(widget.key);
             }}
             title="Edit widget"
-          ></WidgetEditButton>
+          />
           <Widget widget={widget} />
         </div>
       );

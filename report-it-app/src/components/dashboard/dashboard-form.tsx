@@ -8,6 +8,7 @@ import Text from '@commercetools-uikit/text';
 import TextField from '@commercetools-uikit/text-field';
 import { Form, Formik } from 'formik';
 import { DashboardCustomObject } from '../../types/dashboard';
+import { designTokens } from '@commercetools-uikit/design-system';
 
 type Props = {
   onSubmit: (dashbaord: DashboardCustomObject) => Promise<void>;
@@ -40,29 +41,23 @@ const DashboardForm = ({
     >
       {({ values, errors, handleChange, submitForm, dirty }) => (
         <Form>
-          <div style={{ paddingBottom: '16px' }}>
+          <Spacings.Stack scale="m">
             <Spacings.Inline
               alignItems="center"
               justifyContent="flex-end"
-              scale="m"
+              scale="s"
             >
-              <Spacings.Inline
-                alignItems="center"
-                justifyContent="flex-end"
-                scale="m"
-              >
-                <SecondaryButton
-                  label="Cancel"
-                  onClick={onCancel}
-                  type="button"
-                />
-                <PrimaryButton
-                  label="Save"
-                  onClick={submitForm}
-                  type="button"
-                  isDisabled={!dirty}
-                />
-              </Spacings.Inline>
+              <SecondaryButton
+                label="Cancel"
+                onClick={onCancel}
+                type="button"
+              />
+              <PrimaryButton
+                label="Save"
+                onClick={submitForm}
+                type="button"
+                isDisabled={!dirty}
+              />
               {!!dashboard?.value?.name && !!onDelete && (
                 <IconButton
                   label="Delete"
@@ -72,26 +67,28 @@ const DashboardForm = ({
                 />
               )}
             </Spacings.Inline>
-          </div>
-          <Grid
-            gridGap="16px"
-            gridTemplateColumns="repeat(2, 1fr)"
-            gridAutoColumns="1fr"
-          >
-            <Grid.Item gridColumn="span 2">
-              <Spacings.Inline alignItems="center">
-                <TextField
-                  title="Name"
-                  value={values?.value?.name}
-                  name="value.name"
-                  onChange={handleChange}
-                />
-              </Spacings.Inline>
-              {errors.value?.name && (
-                <Text.Caption tone="warning">{errors.value.name}</Text.Caption>
-              )}
-            </Grid.Item>
-          </Grid>
+            <Grid
+              gridGap={designTokens.spacingM}
+              gridTemplateColumns="repeat(2, 1fr)"
+              gridAutoColumns="1fr"
+            >
+              <Grid.Item gridColumn="span 2">
+                <Spacings.Inline alignItems="center">
+                  <TextField
+                    title="Name"
+                    value={values?.value?.name}
+                    name="value.name"
+                    onChange={handleChange}
+                  />
+                </Spacings.Inline>
+                {errors.value?.name && (
+                  <Text.Caption tone="warning">
+                    {errors.value.name}
+                  </Text.Caption>
+                )}
+              </Grid.Item>
+            </Grid>
+          </Spacings.Stack>
         </Form>
       )}
     </Formik>

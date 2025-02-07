@@ -1,4 +1,3 @@
-import React from 'react';
 import Text from '@commercetools-uikit/text';
 import TextField from '@commercetools-uikit/text-field';
 import NumberField from '@commercetools-uikit/number-field';
@@ -7,45 +6,37 @@ import Grid from '@commercetools-uikit/grid';
 import Spacings from '@commercetools-uikit/spacings';
 import { FormikErrors } from 'formik';
 import { Widget } from '../../types/widget';
+import { designTokens } from '@commercetools-uikit/design-system';
 
 type Props = {
   errors: FormikErrors<Widget>;
   values: Widget;
   widget?: Widget;
-  handleChange: any;
+  handleChange: React.ChangeEventHandler;
   onSelectAIGeneration?: (value: boolean) => void;
 };
 
-const WidgetMainInfo = ({
-  errors,
-  values,
-  handleChange,
-  widget,
-  onSelectAIGeneration,
-}: Props) => {
+const WidgetMainInfo = ({ errors, values, handleChange }: Props) => {
   return (
-    <Grid
-      gridGap="16px"
-      gridTemplateColumns="repeat(2, 1fr)"
-      gridAutoColumns="1fr"
-    >
-      <Grid.Item gridColumn="span 2">
-        <Spacings.Inline alignItems="center">
-          <TextField
-            title="Name"
-            value={values?.name}
-            name="name"
-            onChange={handleChange}
-          />
-        </Spacings.Inline>
+    <Grid gridGap={designTokens.spacingM}>
+      <Grid.Item>
+        <TextField
+          title="Name"
+          value={values?.name}
+          name="name"
+          onChange={handleChange}
+        />
         {errors?.name && (
           <Text.Caption tone="warning">{errors.name}</Text.Caption>
         )}
       </Grid.Item>
       <Grid.Item>
         <FieldLabel title="Layout" />
-        <Grid gridGap="16px" gridTemplateColumns="repeat(2, 1fr)">
-          <Grid.Item gridColumn="span 1">
+        <Grid
+          gridGap={designTokens.spacingM}
+          gridTemplateColumns="repeat(2, 1fr)"
+        >
+          <Grid.Item>
             <Spacings.Inline alignItems="center">
               <NumberField
                 title="Height"
@@ -58,7 +49,7 @@ const WidgetMainInfo = ({
               <Text.Caption tone="warning">{errors.layout.h}</Text.Caption>
             )}
           </Grid.Item>
-          <Grid.Item gridColumn="span 1">
+          <Grid.Item>
             <Spacings.Inline alignItems="center">
               <NumberField
                 title="Width"
@@ -71,7 +62,7 @@ const WidgetMainInfo = ({
               <Text.Caption tone="warning">{errors.layout.w}</Text.Caption>
             )}
           </Grid.Item>
-          <Grid.Item gridColumn="span 1">
+          <Grid.Item>
             <Spacings.Inline alignItems="center">
               <NumberField
                 title="Position X"
@@ -84,7 +75,7 @@ const WidgetMainInfo = ({
               <Text.Caption tone="warning">{errors.layout.x}</Text.Caption>
             )}
           </Grid.Item>
-          <Grid.Item gridColumn="span 1">
+          <Grid.Item>
             <Spacings.Inline alignItems="center">
               <NumberField
                 title="Position Y"

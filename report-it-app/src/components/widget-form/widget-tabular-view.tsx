@@ -9,7 +9,7 @@ import DatasourceStateProvider from '../datasource/provider';
 import WidgetQuery from '../query';
 import WidgetDatasourceResponseProvider from '../../providers/widget-datasource-response-provider';
 import WidgetChart from './widget-chart';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import WidgetCSVExport from './widget-csv-export';
 
 type Props = {
