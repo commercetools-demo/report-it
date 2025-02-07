@@ -10,6 +10,7 @@ import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 
 const StyledWrapper = styled.div<{ hasWidgets?: boolean }>`
   position: relative;
+  flex: 1;
   min-width: 400px;
   @media (min-width: 768px) {
     min-width: 990px;

@@ -95,7 +95,7 @@ const DatasourceForm = ({
                   <IconButton
                     label="Delete"
                     onClick={onDelete}
-                    icon={<BinLinearIcon size="small" />}
+                    icon={<BinLinearIcon size="10" />}
                     type="button"
                   />
                 )}

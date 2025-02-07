@@ -136,7 +136,7 @@ const WidgetForm = ({
                   label="Export"
                   title="Export to JSON"
                   onClick={onExport}
-                  icon={<ExportIcon size="small" />}
+                  icon={<ExportIcon size="10" />}
                   type="button"
                 />
               )}
@@ -145,7 +145,7 @@ const WidgetForm = ({
                   label="Delete"
                   title="Delete widget"
                   onClick={onDelete}
-                  icon={<BinLinearIcon size="small" />}
+                  icon={<BinLinearIcon size="10" />}
                   type="button"
                 />
               )}

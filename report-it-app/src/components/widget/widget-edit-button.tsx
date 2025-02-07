@@ -18,7 +18,7 @@ const WidgetEditButton: React.FC<HTMLProps<HTMLButtonElement> & Props> = (
 ) => {
   return (
     <StyledIconButton
-      icon={<EditIcon size="small" />}
+      icon={<EditIcon size="10" />}
       size="small"
       title="Add widget"
       {...props}
