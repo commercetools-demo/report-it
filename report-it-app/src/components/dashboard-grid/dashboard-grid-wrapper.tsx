@@ -3,9 +3,7 @@ import {
   ConfirmationDialog,
   useModalState,
 } from '@commercetools-frontend/application-components';
-import styled from 'styled-components';
 import DashboardGrid from '.';
-import NewWidgetButton from '../widget/new-widget-button';
 import { useState } from 'react';
 import { Widget, WidgetResponse } from '../../types/widget';
 import { useDashboardPanelStateContext } from '../dashboard-tab-panel/provider';
@@ -18,11 +16,10 @@ import {
 import Text from '@commercetools-uikit/text';
 import { useEasyParams } from '../../hooks/use-params';
 import ImportWidgetButton from '../widget/import-widget-button';
-
-const StyledWrapper = styled.div`
-  position: relative;
-  width: 100%;
-`;
+import Spacings from '@commercetools-uikit/spacings';
+import Constraints from '@commercetools-uikit/constraints';
+import { PlusBoldIcon } from '@commercetools-uikit/icons';
+import IconButton from '@commercetools-uikit/flat-button';
 
 const DashboardGridWrapper = () => {
   const {
@@ -128,11 +125,21 @@ const DashboardGridWrapper = () => {
 
   return (
     <>
-      <StyledWrapper>
-        <DashboardGrid onSelectWidget={openModal} />
-        <NewWidgetButton openModal={openModal} />
-        <ImportWidgetButton />
-      </StyledWrapper>
+      <Constraints.Horizontal max={'scale'}>
+        <Spacings.Inline alignItems={'flex-start'}>
+          <DashboardGrid onSelectWidget={openModal} />
+          <Spacings.Stack scale={'s'}>
+            <IconButton
+              onClick={() => openModal()}
+              icon={<PlusBoldIcon size="10" />}
+              title="Add widget"
+              label=""
+            />
+            <ImportWidgetButton />
+          </Spacings.Stack>
+        </Spacings.Inline>
+      </Constraints.Horizontal>
+
       <Drawer
         title={selectedWidget ? 'Edit widget' : 'Add widget'}
         isOpen={drawerState.isModalOpen}
