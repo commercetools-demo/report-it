@@ -14,8 +14,8 @@ const DashboardTabButton = ({ dashbaord, openModal }: Props) => {
       <IconButton
         onClick={() => openModal(dashbaord.key)}
         label="Edit"
-        size="small"
-        icon={<EditIcon size="small" />}
+        size="10"
+        icon={<EditIcon size="10" />}
       ></IconButton>
     </>
   );

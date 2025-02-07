@@ -16,7 +16,7 @@ type Props = {
   dashboard?: DashboardCustomObject;
 };
 
-const DashbaordForm = ({
+const DashboardForm = ({
   onCancel,
   onSubmit,
   onDelete,
@@ -67,7 +67,7 @@ const DashbaordForm = ({
                 <IconButton
                   label="Delete"
                   onClick={onDelete}
-                  icon={<BinLinearIcon size="small" />}
+                  icon={<BinLinearIcon size="10" />}
                   type="button"
                 />
               )}
@@ -98,4 +98,4 @@ const DashbaordForm = ({
   );
 };
 
-export default DashbaordForm;
+export default DashboardForm;

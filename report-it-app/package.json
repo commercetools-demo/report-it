@@ -100,6 +100,7 @@
     "raw-loader": "^4.0.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-dropzone": "^14.3.5",
     "react-google-charts": "^5.2.1",
     "react-grid-layout": "^1.5.0",
     "react-intl": "^6.4.7",
