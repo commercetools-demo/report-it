@@ -37,13 +37,21 @@ const config = {
     ],
     manage: ['manage_key_value_documents'],
   },
-  headers:{
+  headers: {
     csp: {
-      "connect-src": ["https://www.gstatic.com", "'unsafe-eval'", "https://api.openai.com"],
-      "script-src": ["https://www.gstatic.com", "'unsafe-eval'", "https://api.openai.com"],
-      "style-src": ["https://www.gstatic.com"],
-      "img-src": ["https://www.gstatic.com",],
-    }
+      'connect-src': [
+        'https://www.gstatic.com',
+        "'unsafe-eval'",
+        'https://api.openai.com',
+      ],
+      'script-src': [
+        'https://www.gstatic.com',
+        "'unsafe-eval'",
+        'https://api.openai.com',
+      ],
+      'style-src': ['https://www.gstatic.com'],
+      'img-src': ['https://www.gstatic.com'],
+    },
   },
   icon: '${path:@commercetools-frontend/assets/application-icons/rocket.svg}',
   mainMenuLink: {
