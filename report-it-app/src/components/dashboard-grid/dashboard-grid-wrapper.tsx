@@ -3,7 +3,7 @@ import {
   ConfirmationDialog,
   useModalState,
 } from '@commercetools-frontend/application-components';
-import DashboardGrid from '.';
+import DashboardGrid from './index';
 import { useState } from 'react';
 import { Widget, WidgetResponse } from '../../types/widget';
 import { useDashboardPanelStateContext } from '../dashboard-tab-panel/provider';
@@ -20,6 +20,8 @@ import Spacings from '@commercetools-uikit/spacings';
 import Constraints from '@commercetools-uikit/constraints';
 import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import IconButton from '@commercetools-uikit/flat-button';
+import { SuspendedRoute } from '@commercetools-frontend/application-shell';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const DashboardGridWrapper = () => {
   const {
@@ -37,6 +39,8 @@ const DashboardGridWrapper = () => {
     findWidget(getParam('widgetKey'))
   );
   const drawerState = useModalState();
+  const { push } = useHistory();
+  const match = useRouteMatch();
 
   const openModal = (widgetKey?: string) => {
     if (widgetKey) {
@@ -127,7 +131,7 @@ const DashboardGridWrapper = () => {
     <>
       <Constraints.Horizontal max={'scale'}>
         <Spacings.Inline alignItems={'flex-start'}>
-          <DashboardGrid onSelectWidget={openModal} />
+          <DashboardGrid />
           <Spacings.Stack scale={'s'}>
             <IconButton
               onClick={() => openModal()}
@@ -139,7 +143,17 @@ const DashboardGridWrapper = () => {
           </Spacings.Stack>
         </Spacings.Inline>
       </Constraints.Horizontal>
-
+      <SuspendedRoute path={`${match.path}/edit/:selectedWidget`}>
+        <WidgetForm
+          onClose={async () => {
+            push(match.url);
+          }}
+          onSubmit={handleCreateWidget}
+          onDelete={handleDeleteConfirmation}
+          onCancel={closeModal}
+          onExport={handleExportWidget}
+        />
+      </SuspendedRoute>
       <Drawer
         title={selectedWidget ? 'Edit widget' : 'Add widget'}
         isOpen={drawerState.isModalOpen}

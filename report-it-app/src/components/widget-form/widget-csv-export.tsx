@@ -1,5 +1,5 @@
-import { FormikErrors } from 'formik';
-import React, { useMemo } from 'react';
+import { useFormikContext } from 'formik';
+import { useMemo } from 'react';
 import { Widget } from '../../types/widget';
 import Grid from '@commercetools-uikit/grid';
 import Spacings from '@commercetools-uikit/spacings';
@@ -10,26 +10,15 @@ import Text from '@commercetools-uikit/text';
 import cronstrue from 'cronstrue';
 import DataTable from '@commercetools-uikit/data-table';
 
-type Props = {
-  errors: FormikErrors<Widget>;
-  values: Widget;
-  handleChange: any;
-  setFieldValue: any;
-};
-
-const WidgetCSVExport = ({
-  errors,
-  values,
-  handleChange,
-  setFieldValue,
-}: Props) => {
+const WidgetCSVExport = () => {
+  const formik = useFormikContext<Widget>();
   const cronHint = useMemo(() => {
     try {
-      return cronstrue.toString(values?.csvExportConfig?.schedule || '');
+      return cronstrue.toString(formik.values?.csvExportConfig?.schedule || '');
     } catch (e) {
       return '';
     }
-  }, [values?.csvExportConfig?.schedule]);
+  }, [formik.values?.csvExportConfig?.schedule]);
   return (
     <Spacings.Stack>
       <Grid
@@ -41,9 +30,9 @@ const WidgetCSVExport = ({
           <Spacings.Inline alignItems="center">
             <FieldLabel title="CSV Export" />
             <ToggleInput
-              isChecked={values?.csvExportConfig?.enabled}
+              isChecked={formik.values?.csvExportConfig?.enabled}
               name="csvExportConfig.enabled"
-              onChange={handleChange}
+              onChange={formik.handleChange}
             />
           </Spacings.Inline>
         </Grid.Item>
@@ -56,10 +45,10 @@ const WidgetCSVExport = ({
               <Spacings.Inline alignItems="center">
                 <TextField
                   title="URL"
-                  isDisabled={!values?.csvExportConfig?.enabled}
-                  value={values?.csvExportConfig?.url || ''}
+                  isDisabled={!formik.values?.csvExportConfig?.enabled}
+                  value={formik.values?.csvExportConfig?.url || ''}
                   name="csvExportConfig.url"
-                  onChange={handleChange}
+                  onChange={formik.handleChange}
                 />
               </Spacings.Inline>
             </Grid.Item>
@@ -67,17 +56,17 @@ const WidgetCSVExport = ({
               <Spacings.Inline alignItems="center">
                 <TextField
                   title="Schedule"
-                  isDisabled={!values?.csvExportConfig?.enabled}
-                  value={values?.csvExportConfig?.schedule || ''}
+                  isDisabled={!formik.values?.csvExportConfig?.enabled}
+                  value={formik.values?.csvExportConfig?.schedule || ''}
                   name="csvExportConfig.schedule"
                   placeholder="0 7 * * *"
                   hint={cronHint}
-                  onChange={handleChange}
+                  onChange={formik.handleChange}
                 />
               </Spacings.Inline>
-              {(errors?.csvExportConfig as any)?.schedule && (
+              {(formik.errors?.csvExportConfig as any)?.schedule && (
                 <Text.Caption tone="warning">
-                  {(errors?.csvExportConfig as any)?.schedule}
+                  {(formik.errors?.csvExportConfig as any)?.schedule}
                 </Text.Caption>
               )}
             </Grid.Item>
@@ -86,30 +75,30 @@ const WidgetCSVExport = ({
                 <Spacings.Stack>
                   <FieldLabel title="CSV format?" />
                   <ToggleInput
-                    isChecked={values?.csvExportConfig?.csv}
-                    isDisabled={!values?.csvExportConfig?.enabled}
+                    isChecked={formik.values?.csvExportConfig?.csv}
+                    isDisabled={!formik.values?.csvExportConfig?.enabled}
                     name="csvExportConfig.csv"
                     onChange={(e) => {
-                      handleChange(e);
-                      setFieldValue('csvExportConfig.json', false);
+                      formik.handleChange(e);
+                      formik.setFieldValue('csvExportConfig.json', false);
                     }}
                   />
                 </Spacings.Stack>
                 <Spacings.Stack>
                   <FieldLabel title="JSON format?" />
                   <ToggleInput
-                    isChecked={values?.csvExportConfig?.json}
-                    isDisabled={!values?.csvExportConfig?.enabled}
+                    isChecked={formik.values?.csvExportConfig?.json}
+                    isDisabled={!formik.values?.csvExportConfig?.enabled}
                     name="csvExportConfig.json"
                     onChange={(e) => {
-                      handleChange(e);
-                      setFieldValue('csvExportConfig.csv', false);
+                      formik.handleChange(e);
+                      formik.setFieldValue('csvExportConfig.csv', false);
                     }}
                   />
                 </Spacings.Stack>
               </Spacings.Inline>
             </Grid.Item>
-            {!!values?.csvExportConfig?.history?.length && (
+            {!!formik.values?.csvExportConfig?.history?.length && (
               <Grid.Item gridColumn="span 2">
                 <Spacings.Stack scale="m">
                   <FieldLabel title="Execution History"></FieldLabel>
@@ -130,7 +119,7 @@ const WidgetCSVExport = ({
                         ),
                       },
                     ]}
-                    rows={values?.csvExportConfig?.history}
+                    rows={formik.values?.csvExportConfig?.history}
                   />
                 </Spacings.Stack>
               </Grid.Item>

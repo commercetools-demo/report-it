@@ -1,10 +1,13 @@
 import DashboardTabView from './dashboard-tabs';
 import { DashboardsProvider } from './provider';
 
-const Dashboard = () => {
+type Props = {
+  linkToHome: string;
+};
+const Dashboard: React.FC<Props> = ({ linkToHome }) => {
   return (
     <DashboardsProvider>
-      <DashboardTabView />
+      <DashboardTabView linkToHome={linkToHome} />
     </DashboardsProvider>
   );
 };

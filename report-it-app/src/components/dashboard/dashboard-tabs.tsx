@@ -16,14 +16,25 @@ import DashboardForm from './dashboard-form';
 import { useDashboardsStateContext } from './provider';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import Text from '@commercetools-uikit/text';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  useHistory,
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom';
 import TabHeader from '../tab/tab-header';
 import Spacings from '@commercetools-uikit/spacings';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import { useIsAuthorized } from '@commercetools-frontend/permissions';
 import { PERMISSIONS } from '../../constants';
-const DashboardTabView = () => {
+
+type Props = {
+  linkToHome: string;
+};
+const DashboardTabView: React.FC<Props> = ({ linkToHome }) => {
+  const { type } = useParams<{ type: string }>();
   const { isLoading, dashboards } = useDashboardsStateContext();
   const [selectedDashboard, setSelectedDashboard] =
     useState<DashboardCustomObject | null>();
@@ -33,6 +44,7 @@ const DashboardTabView = () => {
   const drawerState = useModalState();
   const confirmState = useModalState();
   const match = useRouteMatch();
+  const { replace } = useHistory();
 
   const canManage = useIsAuthorized({
     demandedPermissions: [PERMISSIONS.Manage],
@@ -98,6 +110,13 @@ const DashboardTabView = () => {
 
     drawerState.openModal();
   };
+
+  const dashboardCustomObjects = dashboards || [];
+
+  if (!type && dashboardCustomObjects.length > 0) {
+    replace(match.url + '/' + dashboardCustomObjects[0].id);
+  }
+
   return (
     <>
       <TabularMainPage
@@ -112,12 +131,12 @@ const DashboardTabView = () => {
             />
           </Spacings.Inline>
         }
-        tabControls={(dashboards || []).map((dashboard, index) => {
+        tabControls={dashboardCustomObjects.map((dashboard, index) => {
           return (
             <TabHeader
               key={index}
               dashboardKey={dashboard.key}
-              to={`${match.url}${index === 0 ? '' : '/' + dashboard.id}`}
+              to={`${linkToHome}/${dashboard.key}`}
               label={dashboard.value.name}
               exactPathMatch={true}
               openModal={openModal}
@@ -126,13 +145,9 @@ const DashboardTabView = () => {
         })}
       >
         <Switch>
-          {(dashboards || []).map((dashboard, index) => {
-            const paths = [`${match.path}/${dashboard.id}`];
-            if (index === 0) {
-              paths.push(match.path);
-            }
+          {dashboardCustomObjects.map((dashboard, index) => {
             return (
-              <Route key={index} path={paths} exact={true}>
+              <Route key={index} path={`${match.path}/${dashboard.key}`}>
                 <DashboardTabPanel dashboard={dashboard} key={dashboard.key} />
               </Route>
             );
