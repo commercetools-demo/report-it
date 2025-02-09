@@ -135,78 +135,78 @@ const WidgetForm = ({
       {!widget?.name && <WidgetMainInfo />}
 
       {widget && widget.name && (
-        <WidgetDatasourceResponseProvider
-          availableDatasourceKeys={availableDatasourceKeys}
-        >
-          <TabularModalPage
-            title={widget?.name}
-            customTitleRow={
-              <Spacings.Inline
-                alignItems="center"
-                justifyContent="flex-end"
-                scale="s"
-              >
-                <SecondaryButton
-                  label="Cancel"
-                  onClick={onCancel}
-                  type="button"
-                />
-                <PrimaryButton
-                  label="Save"
-                  onClick={formik.submitForm}
-                  type="button"
-                  isDisabled={!formik.dirty}
-                />
-                {!!widget && (
-                  <IconButton
-                    label="Export"
-                    title="Export to JSON"
-                    onClick={onExport}
-                    icon={<ExportIcon size="10" />}
-                    type="button"
-                  />
-                )}
-                {!!widget && (
-                  <IconButton
-                    label="Delete"
-                    title="Delete widget"
-                    onClick={onDelete}
-                    icon={<BinLinearIcon size="10" />}
-                    type="button"
-                  />
-                )}
-              </Spacings.Inline>
-            }
-            isOpen={true}
-            onClose={onClose}
-            tabControls={tabs.map((tab) => (
-              <TabHeader
-                to={`${match.url}${tab.id ? '/' + tab.id : ''}`}
-                label={tab.name}
-                key={tab.name}
-                exactPathMatch={true}
+        <TabularModalPage
+          title={widget?.name}
+          customTitleRow={
+            <Spacings.Inline
+              alignItems="center"
+              justifyContent="flex-end"
+              scale="s"
+            >
+              <SecondaryButton
+                label="Cancel"
+                onClick={onCancel}
+                type="button"
               />
-            ))}
-          >
-            <Switch>
-              <Route path={`${match.path}`} exact={true}>
-                <WidgetMainInfo />
-              </Route>
-              <Route path={`${match.path}/datasource`}>
+              <PrimaryButton
+                label="Save"
+                onClick={formik.submitForm}
+                type="button"
+                isDisabled={!formik.dirty}
+              />
+              {!!widget && (
+                <IconButton
+                  label="Export"
+                  title="Export to JSON"
+                  onClick={onExport}
+                  icon={<ExportIcon size="10" />}
+                  type="button"
+                />
+              )}
+              {!!widget && (
+                <IconButton
+                  label="Delete"
+                  title="Delete widget"
+                  onClick={onDelete}
+                  icon={<BinLinearIcon size="10" />}
+                  type="button"
+                />
+              )}
+            </Spacings.Inline>
+          }
+          isOpen={true}
+          onClose={onClose}
+          tabControls={tabs.map((tab) => (
+            <TabHeader
+              to={`${match.url}${tab.id ? '/' + tab.id : ''}`}
+              label={tab.name}
+              key={tab.name}
+              exactPathMatch={true}
+            />
+          ))}
+        >
+          <Switch>
+            <Route path={`${match.path}`} exact={true}>
+              <WidgetMainInfo />
+            </Route>
+            <Route path={`${match.path}/datasource`}>
+              <WidgetDatasourceResponseProvider
+                availableDatasourceKeys={availableDatasourceKeys}
+              >
                 <WidgetDatasource widget={widget} />
-              </Route>
-              <Route path={`${match.path}/query`}>
-                <WidgetQuery />
-              </Route>
-              <Route path={`${match.path}/chart`}>
-                <WidgetChart />
-              </Route>
-              <Route path={`${match.path}/export`}>
-                <WidgetCSVExport />
-              </Route>
-            </Switch>
-          </TabularModalPage>
-        </WidgetDatasourceResponseProvider>
+              </WidgetDatasourceResponseProvider>
+            </Route>
+            <Route path={`${match.path}/query`}>
+              <WidgetQuery />
+            </Route>
+            <Route path={`${match.path}/chart`}>
+              <WidgetChart />
+            </Route>
+            <Route path={`${match.path}/export`}>
+              <WidgetCSVExport />
+            </Route>
+          </Switch>
+        </TabularModalPage>
       )}
     </FormikProvider>
   );
