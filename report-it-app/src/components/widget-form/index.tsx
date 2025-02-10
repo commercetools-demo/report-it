@@ -26,19 +26,12 @@ import Text from '@commercetools-uikit/text';
 
 type Props = {
   onClose?: () => void;
-  onSubmit: (widget: Widget) => Promise<void>;
+  onSubmit: (widget: Widget, widgetKey: string) => Promise<void>;
   onDelete?: (selectedWidgetKey: string) => Promise<void>;
-  onCancel: () => void;
-  onExport: () => void;
+  onExport?: (selectedWidgetKey: string) => void;
 };
 
-const WidgetForm = ({
-  onCancel,
-  onSubmit,
-  onDelete,
-  onExport,
-  onClose,
-}: Props) => {
+const WidgetForm = ({ onSubmit, onDelete, onExport, onClose }: Props) => {
   const { findWidget } = useDashboardPanelStateContext();
   const { selectedWidget } = useParams<{ selectedWidget: string }>();
   const match = useRouteMatch();
@@ -139,7 +132,7 @@ const WidgetForm = ({
         layout: { w: 4, h: 2, x: 0, y: 0 },
         csvExportConfig: { csv: true },
       } as Widget),
-    onSubmit: onSubmit,
+    onSubmit: (values) => onSubmit(values, widget?.key || ''),
     validateOnBlur: true,
     validate: handleValidation,
     enableReinitialize: true,
@@ -147,93 +140,86 @@ const WidgetForm = ({
 
   return (
     <FormikProvider value={formik}>
-      {!widget?.value?.name && <WidgetMainInfo />}
-
-      {widget && widget.value && widget.value.name && (
-        <TabularModalPage
-          title={widget.value.name}
-          customTitleRow={
-            <Spacings.Inline
-              alignItems="center"
-              justifyContent="flex-end"
-              scale="s"
-            >
-              <SecondaryButton
-                label="Cancel"
-                onClick={onCancel}
-                type="button"
-              />
-              <PrimaryButton
-                label="Save"
-                onClick={formik.submitForm}
-                type="button"
-                isDisabled={!formik.dirty}
-              />
-              {!!widget && (
-                <IconButton
-                  label="Export"
-                  title="Export to JSON"
-                  onClick={onExport}
-                  icon={<ExportIcon size="10" />}
-                  type="button"
-                />
-              )}
-              {!!widget && (
-                <IconButton
-                  label="Delete"
-                  title="Delete widget"
-                  onClick={confirmState.openModal}
-                  icon={<BinLinearIcon size="10" />}
-                  type="button"
-                />
-              )}
-            </Spacings.Inline>
-          }
-          isOpen={true}
-          onClose={onClose}
-          tabControls={tabs.map((tab) => (
-            <TabHeader
-              to={`${match.url}${tab.id ? '/' + tab.id : ''}`}
-              label={tab.name}
-              key={tab.name}
-              exactPathMatch={true}
-            />
-          ))}
-        >
-          <DatasourceStateProvider>
-            <WidgetDatasourceResponseProvider
-              availableDatasourceKeys={availableDatasourceKeys}
-            >
-              <Switch>
-                <Route path={`${match.path}`} exact={true}>
-                  <WidgetMainInfo />
-                </Route>
-                <Route path={`${match.path}/datasource`}>
-                  <WidgetDatasource widget={widget.value} />
-                </Route>
-                <Route path={`${match.path}/query`}>
-                  <WidgetQuery />
-                </Route>
-                <Route path={`${match.path}/chart`}>
-                  <WidgetChart />
-                </Route>
-                <Route path={`${match.path}/export`}>
-                  <WidgetCSVExport />
-                </Route>
-              </Switch>
-            </WidgetDatasourceResponseProvider>
-          </DatasourceStateProvider>
-          <ConfirmationDialog
-            isOpen={confirmState.isModalOpen}
-            onClose={confirmState.closeModal}
-            onConfirm={handleDeleteWidget}
-            title="Delete widget"
-            onCancel={confirmState.closeModal}
+      <TabularModalPage
+        title={formik.values.name}
+        customTitleRow={
+          <Spacings.Inline
+            alignItems="center"
+            justifyContent="flex-end"
+            scale="s"
           >
-            <Text.Body>Are you sure you want to delete this widget?</Text.Body>
-          </ConfirmationDialog>
-        </TabularModalPage>
-      )}
+            <SecondaryButton label="Cancel" onClick={onClose} type="button" />
+            <PrimaryButton
+              label="Save"
+              onClick={formik.submitForm}
+              type="button"
+              isDisabled={!formik.dirty}
+            />
+            {!!widget && onExport && (
+              <IconButton
+                label="Export"
+                title="Export to JSON"
+                onClick={() => onExport(widget.key)}
+                icon={<ExportIcon size="10" />}
+                type="button"
+              />
+            )}
+            {!!widget && onDelete && (
+              <IconButton
+                label="Delete"
+                title="Delete widget"
+                onClick={confirmState.openModal}
+                icon={<BinLinearIcon size="10" />}
+                type="button"
+              />
+            )}
+          </Spacings.Inline>
+        }
+        isOpen={true}
+        onClose={onClose}
+        tabControls={tabs.map((tab) => (
+          <TabHeader
+            to={`${match.url}${tab.id ? '/' + tab.id : ''}`}
+            label={tab.name}
+            key={tab.name}
+            exactPathMatch={true}
+            isDisabled={!widget?.value && tab.id !== undefined}
+          />
+        ))}
+      >
+        <DatasourceStateProvider>
+          <WidgetDatasourceResponseProvider
+            availableDatasourceKeys={availableDatasourceKeys}
+          >
+            <Switch>
+              <Route path={`${match.path}`} exact={true}>
+                <WidgetMainInfo />
+              </Route>
+              <Route path={`${match.path}/datasource`}>
+                <WidgetDatasource widget={widget?.value} />
+              </Route>
+              <Route path={`${match.path}/query`}>
+                <WidgetQuery />
+              </Route>
+              <Route path={`${match.path}/chart`}>
+                <WidgetChart />
+              </Route>
+              <Route path={`${match.path}/export`}>
+                <WidgetCSVExport />
+              </Route>
+            </Switch>
+          </WidgetDatasourceResponseProvider>
+        </DatasourceStateProvider>
+        <ConfirmationDialog
+          isOpen={confirmState.isModalOpen}
+          onClose={confirmState.closeModal}
+          onConfirm={handleDeleteWidget}
+          title="Delete widget"
+          onCancel={confirmState.closeModal}
+        >
+          <Text.Body>Are you sure you want to delete this widget?</Text.Body>
+        </ConfirmationDialog>
+      </TabularModalPage>
     </FormikProvider>
   );
 };
