@@ -21,7 +21,7 @@ import WidgetCSVExport from './widget-csv-export';
 import WidgetDatasourceResponseProvider from '../../providers/widget-datasource-response-provider';
 
 type Props = {
-  onClose: () => void;
+  onClose?: () => void;
   onSubmit: (widget: Widget) => Promise<void>;
   onDelete: () => void;
   onCancel: () => void;

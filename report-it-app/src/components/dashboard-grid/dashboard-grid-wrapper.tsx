@@ -166,7 +166,6 @@ const DashboardGridWrapper = () => {
           onDelete={handleDeleteConfirmation}
           onCancel={closeModal}
           onExport={handleExportWidget}
-          widget={selectedWidget?.value ?? undefined}
         />
       </Drawer>
       <ConfirmationDialog
