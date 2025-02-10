@@ -9,8 +9,10 @@ import cronstrue from 'cronstrue';
 import { useDashboardPanelStateContext } from '../dashboard-tab-panel/provider';
 import { Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 import {
+  ConfirmationDialog,
   TabHeader,
   TabularModalPage,
+  useModalState,
 } from '@commercetools-frontend/application-components';
 import { useMemo } from 'react';
 import WidgetMainInfo from './widget-main-info';
@@ -19,11 +21,13 @@ import WidgetQuery from '../query';
 import WidgetChart from './widget-chart';
 import WidgetCSVExport from './widget-csv-export';
 import WidgetDatasourceResponseProvider from '../../providers/widget-datasource-response-provider';
+import DatasourceStateProvider from '../datasource/provider';
+import Text from '@commercetools-uikit/text';
 
 type Props = {
   onClose?: () => void;
   onSubmit: (widget: Widget) => Promise<void>;
-  onDelete: () => void;
+  onDelete?: (selectedWidgetKey: string) => Promise<void>;
   onCancel: () => void;
   onExport: () => void;
 };
@@ -38,8 +42,9 @@ const WidgetForm = ({
   const { findWidget } = useDashboardPanelStateContext();
   const { selectedWidget } = useParams<{ selectedWidget: string }>();
   const match = useRouteMatch();
+  const confirmState = useModalState();
 
-  const widget = findWidget(selectedWidget)?.value;
+  const widget = findWidget(selectedWidget);
   const handleValidation = (values: Widget) => {
     const errors: Record<keyof Widget, string | object> = {} as never;
     if (!values.name) {
@@ -109,6 +114,11 @@ const WidgetForm = ({
     return errors;
   };
 
+  const handleDeleteWidget = async () => {
+    onDelete && widget && (await onDelete(widget.key));
+    confirmState.closeModal();
+  };
+
   const tabs = [
     { name: 'Main Info' },
     { name: 'Select Datasource', id: 'datasource' },
@@ -118,12 +128,17 @@ const WidgetForm = ({
   ];
 
   const availableDatasourceKeys = useMemo(() => {
-    return widget?.config?.datasources.map((d) => d.key);
-  }, [widget?.config?.datasources]);
+    return widget?.value?.config?.datasources.map((d) => d.key);
+  }, [widget?.value?.config?.datasources]);
 
   const formik = useFormik<Widget>({
     initialValues:
-      widget || ({ layout: {}, csvExportConfig: { csv: true } } as Widget),
+      widget?.value ||
+      ({
+        name: '',
+        layout: { w: 4, h: 2, x: 0, y: 0 },
+        csvExportConfig: { csv: true },
+      } as Widget),
     onSubmit: onSubmit,
     validateOnBlur: true,
     validate: handleValidation,
@@ -132,11 +147,11 @@ const WidgetForm = ({
 
   return (
     <FormikProvider value={formik}>
-      {!widget?.name && <WidgetMainInfo />}
+      {!widget?.value?.name && <WidgetMainInfo />}
 
-      {widget && widget.name && (
+      {widget && widget.value && widget.value.name && (
         <TabularModalPage
-          title={widget?.name}
+          title={widget.value.name}
           customTitleRow={
             <Spacings.Inline
               alignItems="center"
@@ -167,7 +182,7 @@ const WidgetForm = ({
                 <IconButton
                   label="Delete"
                   title="Delete widget"
-                  onClick={onDelete}
+                  onClick={confirmState.openModal}
                   icon={<BinLinearIcon size="10" />}
                   type="button"
                 />
@@ -185,27 +200,38 @@ const WidgetForm = ({
             />
           ))}
         >
-          <Switch>
-            <Route path={`${match.path}`} exact={true}>
-              <WidgetMainInfo />
-            </Route>
-            <Route path={`${match.path}/datasource`}>
-              <WidgetDatasourceResponseProvider
-                availableDatasourceKeys={availableDatasourceKeys}
-              >
-                <WidgetDatasource widget={widget} />
-              </WidgetDatasourceResponseProvider>
-            </Route>
-            <Route path={`${match.path}/query`}>
-              <WidgetQuery />
-            </Route>
-            <Route path={`${match.path}/chart`}>
-              <WidgetChart />
-            </Route>
-            <Route path={`${match.path}/export`}>
-              <WidgetCSVExport />
-            </Route>
-          </Switch>
+          <DatasourceStateProvider>
+            <WidgetDatasourceResponseProvider
+              availableDatasourceKeys={availableDatasourceKeys}
+            >
+              <Switch>
+                <Route path={`${match.path}`} exact={true}>
+                  <WidgetMainInfo />
+                </Route>
+                <Route path={`${match.path}/datasource`}>
+                  <WidgetDatasource widget={widget.value} />
+                </Route>
+                <Route path={`${match.path}/query`}>
+                  <WidgetQuery />
+                </Route>
+                <Route path={`${match.path}/chart`}>
+                  <WidgetChart />
+                </Route>
+                <Route path={`${match.path}/export`}>
+                  <WidgetCSVExport />
+                </Route>
+              </Switch>
+            </WidgetDatasourceResponseProvider>
+          </DatasourceStateProvider>
+          <ConfirmationDialog
+            isOpen={confirmState.isModalOpen}
+            onClose={confirmState.closeModal}
+            onConfirm={handleDeleteWidget}
+            title="Delete widget"
+            onCancel={confirmState.closeModal}
+          >
+            <Text.Body>Are you sure you want to delete this widget?</Text.Body>
+          </ConfirmationDialog>
         </TabularModalPage>
       )}
     </FormikProvider>

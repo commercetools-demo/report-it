@@ -1,6 +1,5 @@
 import {
   Drawer,
-  ConfirmationDialog,
   useModalState,
 } from '@commercetools-frontend/application-components';
 import DashboardGrid from './index';
@@ -13,7 +12,6 @@ import {
   NOTIFICATION_DOMAINS,
   NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
-import Text from '@commercetools-uikit/text';
 import { useEasyParams } from '../../hooks/use-params';
 import ImportWidgetButton from '../widget/import-widget-button';
 import Spacings from '@commercetools-uikit/spacings';
@@ -32,7 +30,6 @@ const DashboardGridWrapper = () => {
     refresh,
     findWidget,
   } = useDashboardPanelStateContext();
-  const confirmState = useModalState();
   const showNotification = useShowNotification();
   const { setParam, clearParam, getParam } = useEasyParams();
   const [selectedWidget, setSelectedWidget] = useState<WidgetResponse | null>(
@@ -104,27 +101,15 @@ const DashboardGridWrapper = () => {
     });
   };
 
-  const handleDeleteConfirmation = () => {
-    if (!selectedWidget) {
-      return;
-    }
-
-    confirmState.openModal();
-  };
-
-  const handleDeleteWidget = async () => {
-    if (!selectedWidget) {
-      return;
-    }
-    await removeWidget?.(selectedWidget.key);
+  const handleDeleteWidget = async (selectedWidgetKey: string) => {
+    await removeWidget(selectedWidgetKey);
     showNotification({
       domain: NOTIFICATION_DOMAINS.SIDE,
       kind: NOTIFICATION_KINDS_SIDE.success,
       text: 'Widget deleted successfully',
     });
     await refresh();
-    drawerState.closeModal();
-    confirmState.closeModal();
+    push(match.url);
   };
 
   return (
@@ -149,7 +134,7 @@ const DashboardGridWrapper = () => {
             push(match.url);
           }}
           onSubmit={handleCreateWidget}
-          onDelete={handleDeleteConfirmation}
+          onDelete={handleDeleteWidget}
           onCancel={closeModal}
           onExport={handleExportWidget}
         />
@@ -163,20 +148,10 @@ const DashboardGridWrapper = () => {
       >
         <WidgetForm
           onSubmit={handleCreateWidget}
-          onDelete={handleDeleteConfirmation}
           onCancel={closeModal}
           onExport={handleExportWidget}
         />
       </Drawer>
-      <ConfirmationDialog
-        isOpen={confirmState.isModalOpen}
-        onClose={confirmState.closeModal}
-        onConfirm={handleDeleteWidget}
-        title="Delete widget"
-        onCancel={confirmState.closeModal}
-      >
-        <Text.Body>Are you sure you want to delete this widget?</Text.Body>
-      </ConfirmationDialog>
     </>
   );
 };

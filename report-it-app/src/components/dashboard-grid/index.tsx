@@ -9,7 +9,7 @@ import WidgetEditButton from '../widget/widget-edit-button';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-const StyledWrapper = styled.div<{ hasWidgets?: boolean }>`
+const StyledWrapper = styled.div<{ $hasWidgets?: boolean }>`
   position: relative;
   flex: 1;
   min-width: 400px;
@@ -19,7 +19,7 @@ const StyledWrapper = styled.div<{ hasWidgets?: boolean }>`
   @media (min-width: 1024px) {
     min-width: 1280px;
   }
-  ${(props) => (props.hasWidgets ? '' : 'height: 160px;')}
+  ${(props) => (props.$hasWidgets ? '' : 'height: 160px;')}
 `;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -70,7 +70,7 @@ const DashboardGrid = () => {
   }, [widgets]);
 
   return (
-    <StyledWrapper hasWidgets={!!widgets?.length}>
+    <StyledWrapper $hasWidgets={!!widgets?.length}>
       {isLoading && (
         <div>
           <LoadingSpinner />
