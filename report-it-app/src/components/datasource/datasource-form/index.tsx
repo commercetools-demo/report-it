@@ -75,12 +75,11 @@ const DatasourceForm = ({
     validate: validate,
   });
 
-  console.log(formik.errors);
-
   return (
     <CustomFormModalPage
       title={'Create a new datasource'}
       isOpen={true}
+      onClose={onCancel}
       formControls={
         <>
           <CustomFormModalPage.FormSecondaryButton

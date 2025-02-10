@@ -3,7 +3,8 @@ import PrimaryButton from '@commercetools-uikit/primary-button';
 import { Widget } from '../../../types/widget';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { SuspendedRoute } from '@commercetools-frontend/application-shell';
-import PickDatasource from '../pick-datasource/pick-datasource';
+import { lazy } from 'react';
+const PickDatasource = lazy(() => import('../pick-datasource/pick-datasource'));
 
 interface Props {
   onSelect?: (keys: string[]) => void;

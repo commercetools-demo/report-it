@@ -1,13 +1,15 @@
-import { FC } from 'react';
+import { FC, lazy } from 'react';
 import { CustomFormModalPage } from '@commercetools-frontend/application-components';
 import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import AllDatasources from '../all-datasources';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { SuspendedRoute } from '@commercetools-frontend/application-shell';
-import DatasourceForm from '../datasource-form';
+
 import { DatasourceDraft } from '../../../types/datasource';
 import { useDatasourceStateContext } from '../provider';
 import { useDatasource } from '../../../hooks/use-datasource';
+
+const DatasourceForm = lazy(() => import('../datasource-form'));
 
 export type Props = {
   onClose?: () => void;
