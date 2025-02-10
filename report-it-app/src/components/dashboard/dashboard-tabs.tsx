@@ -9,7 +9,7 @@ import {
   NOTIFICATION_DOMAINS,
   NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { DashboardCustomObject } from '../../types/dashboard';
 import { DashboardTabPanel } from '../dashboard-tab-panel';
 import DashboardForm from './dashboard-form';
@@ -33,7 +33,8 @@ import { PERMISSIONS } from '../../constants';
 type Props = {
   linkToHome: string;
 };
-const DashboardTabView: React.FC<Props> = ({ linkToHome }) => {
+
+const DashboardTabView: FC<Props> = ({ linkToHome }) => {
   const { type } = useParams<{ type: string }>();
   const { isLoading, dashboards } = useDashboardsStateContext();
   const [selectedDashboard, setSelectedDashboard] =

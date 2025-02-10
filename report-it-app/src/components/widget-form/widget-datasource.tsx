@@ -8,23 +8,21 @@ type Props = {
 const WidgetDatasource = ({ widget }: Props) => {
   const formik = useFormikContext<Widget>();
   return (
-    <div>
-      <Datasource
-        widget={widget}
-        values={formik.values}
-        onSelect={(keys: string[]) => {
-          formik.handleChange({
-            target: {
-              name: 'config.datasources',
-              value: keys.map((key: string) => ({
-                key,
-                typeId: 'custom-object',
-              })),
-            },
-          });
-        }}
-      />
-    </div>
+    <Datasource
+      widget={widget}
+      values={formik.values}
+      onSelect={(keys: string[]) => {
+        formik.handleChange({
+          target: {
+            name: 'config.datasources',
+            value: keys.map((key: string) => ({
+              key,
+              typeId: 'custom-object',
+            })),
+          },
+        });
+      }}
+    />
   );
 };
 

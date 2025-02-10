@@ -1,15 +1,19 @@
 import {
+  CustomFormModalPage,
   Drawer,
   useModalState,
 } from '@commercetools-frontend/application-components';
-import { BackIcon, PlusBoldIcon } from '@commercetools-uikit/icons';
-import FlatButton from '@commercetools-uikit/flat-button';
+import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import PrimaryButton from '@commercetools-uikit/primary-button';
-import NewDatasource from '../create-new-datasource';
 import Spacings from '@commercetools-uikit/spacings';
-import Text from '@commercetools-uikit/text';
 import AllDatasources from '../all-datasources';
 import { Widget } from '../../../types/widget';
+import DatasourceForm from '../datasource-form';
+import { useDatasourceStateContext } from '../provider';
+import { useDatasource } from '../../../hooks/use-datasource';
+import { DatasourceDraft } from '../../../types/datasource';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { SuspendedRoute } from '@commercetools-frontend/application-shell';
 
 interface Props {
   onSelect?: (keys: string[]) => void;
@@ -17,38 +21,65 @@ interface Props {
   values?: Widget;
 }
 const AddFromDatasources = ({ onSelect, values }: Props) => {
-  const drawerState = useModalState();
+  const newDataSourceDrawerState = useModalState();
   const selectedDatasources = values?.config?.datasources?.map((d) => d.key);
+  const match = useRouteMatch();
+  const { push } = useHistory();
+
+  const { refreshData } = useDatasourceStateContext();
+
+  const { createDatasource } = useDatasource();
+
+  const handleCreateDatasource = async (datasource: DatasourceDraft) => {
+    const result = await createDatasource(datasource);
+    if (!!result) {
+      newDataSourceDrawerState.closeModal();
+    }
+    refreshData?.();
+  };
 
   return (
     <>
       <PrimaryButton
         iconLeft={<PlusBoldIcon />}
         label="Pick from datasources"
-        onClick={drawerState.openModal}
+        onClick={() => push(`${match.url}/pick`)}
       />
+      <SuspendedRoute path={`${match.path}/pick`}>
+        <CustomFormModalPage
+          title="Pick a datasource"
+          isOpen={true}
+          onClose={() => push(`${match.url}`)}
+          formControls={
+            <>
+              <CustomFormModalPage.FormPrimaryButton
+                iconLeft={<PlusBoldIcon />}
+                label="Create a new datasource"
+                onClick={newDataSourceDrawerState.openModal}
+              />
+            </>
+          }
+        >
+          <Spacings.Stack scale="l">
+            <AllDatasources
+              selectedDatasources={selectedDatasources}
+              onSelect={onSelect}
+            />
+          </Spacings.Stack>
+        </CustomFormModalPage>
+      </SuspendedRoute>
+
       <Drawer
-        title="Pick a datasource"
-        isOpen={drawerState.isModalOpen}
-        onClose={drawerState.closeModal}
+        title="Create a new datasource"
+        isOpen={newDataSourceDrawerState.isModalOpen}
+        onClose={newDataSourceDrawerState.closeModal}
         hideControls
         size={20}
       >
-        <Spacings.Stack scale="l">
-          <Spacings.Inline justifyContent="space-between" alignItems="center">
-            <FlatButton
-              label="Back"
-              icon={<BackIcon />}
-              onClick={drawerState.closeModal}
-            />
-            <NewDatasource />
-          </Spacings.Inline>
-          <Text.Headline>Pick from all Datasources</Text.Headline>
-          <AllDatasources
-            selectedDatasources={selectedDatasources}
-            onSelect={onSelect}
-          />
-        </Spacings.Stack>
+        <DatasourceForm
+          onSubmit={handleCreateDatasource}
+          onCancel={newDataSourceDrawerState.closeModal}
+        />
       </Drawer>
     </>
   );
