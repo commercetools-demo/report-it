@@ -2,24 +2,25 @@ import FieldLabel from '@commercetools-uikit/field-label';
 import Grid from '@commercetools-uikit/grid';
 import IconButton from '@commercetools-uikit/icon-button';
 import { BinLinearIcon } from '@commercetools-uikit/icons';
-import PrimaryButton from '@commercetools-uikit/primary-button';
-import SecondaryButton from '@commercetools-uikit/secondary-button';
-import Spacings from '@commercetools-uikit/spacings';
-import Text from '@commercetools-uikit/text';
 import TextInput from '@commercetools-uikit/text-input';
-import { Form, Formik } from 'formik';
+import { useFormik } from 'formik';
 import styled from 'styled-components';
 import { useOpenAI } from '../../../hooks/openai';
-import { Datasource } from '../../../types/datasource';
+import { Datasource, DatasourceResponse } from '../../../types/datasource';
 import AIGenerationButton from '../../ai-generation/ai-generation-button';
 import Editor from '../editor';
-
-type Props = {
-  onSubmit: (datasource: Datasource) => Promise<void>;
-  onDelete?: () => void;
-  onCancel: () => void;
-  datasource?: Datasource;
-};
+import { designTokens } from '@commercetools-uikit/design-system';
+import {
+  ConfirmationDialog,
+  CustomFormModalPage,
+  useModalState,
+} from '@commercetools-frontend/application-components';
+import TextField from '@commercetools-uikit/text-field';
+import FieldErrors from '@commercetools-uikit/field-errors';
+import omitEmpty from 'omit-empty-es';
+import { useParams } from 'react-router-dom';
+import { useDatasource } from '../../../hooks/use-datasource';
+import Text from '@commercetools-uikit/text';
 
 const initialQueryCtp = `# shift-option/alt-click on a query below to jump to it in the explorer
 # option/alt-click on a field in the explorer to select all subfields
@@ -37,92 +38,118 @@ const Spacer = styled.div`
   border-bottom: 1px solid #e2e8f0;
 `;
 
+type TErrors = {
+  name: { missing?: boolean };
+  query: { missing?: boolean };
+};
+
+const validate = (values: Datasource) => {
+  const errors: TErrors = { name: {}, query: {} };
+
+  if (TextInput.isEmpty(values.name) || values.name.trim().length === 0) {
+    errors.name.missing = true;
+  }
+  if (TextInput.isEmpty(values.query) || values.query.trim().length === 0) {
+    errors.query.missing = true;
+  }
+
+  return omitEmpty<TErrors>(errors);
+};
+
+type Props = {
+  onSubmit: (datasource: Datasource, datasourceKey?: string) => Promise<void>;
+  onDelete?: () => void;
+  onCancel: () => void;
+  datasource?: Datasource;
+  createNewMode?: boolean;
+  dataSources?: Array<DatasourceResponse>;
+};
+
 const DatasourceForm = ({
   onSubmit,
   onCancel,
   onDelete,
-  datasource = {
-    name: '',
-    query: initialQueryCtp,
-    variables: '',
-  } as Datasource,
+  createNewMode = true,
+  dataSources,
 }: Props) => {
+  const { rowKey } = useParams<{ rowKey?: string }>();
+
+  const { deleteDatasource } = useDatasource();
+  const confirmState = useModalState();
+
+  const datasource =
+    dataSources?.find((datasource) => datasource.key === rowKey)?.value ||
+    ({
+      name: '',
+      query: initialQueryCtp,
+      variables: '',
+    } as Datasource);
   const { getGraphQLQueries } = useOpenAI();
 
-  const handleValidation = (values: Datasource) => {
-    const errors: Record<keyof Datasource, string> = {} as never;
-    if (!values.name) {
-      errors['name'] = 'Required';
-    }
-    if (!values.query) {
-      errors['query'] = 'Required';
-    }
+  const formik = useFormik({
+    initialValues: datasource,
+    onSubmit: (values) => onSubmit(values, rowKey),
+    enableReinitialize: true,
+    validate: validate,
+  });
 
-    return errors;
+  const handleDeleteDatasource = async () => {
+    await deleteDatasource(rowKey || '');
+    onDelete?.();
+    confirmState.closeModal();
   };
 
   return (
-    <Formik
-      initialValues={datasource}
-      onSubmit={onSubmit}
-      validateOnBlur
-      validate={handleValidation}
-    >
-      {({ values, errors, handleChange, submitForm, setFieldValue }) => (
-        <Form>
-          <div style={{ paddingBottom: '16px' }}>
-            <Spacings.Inline
-              alignItems="center"
-              justifyContent="flex-end"
-              scale="m"
-            >
-              <Spacings.Inline
-                alignItems="center"
-                justifyContent="flex-end"
-                scale="m"
-              >
-                <SecondaryButton
-                  label="Cancel"
-                  onClick={onCancel}
-                  type="button"
-                />
-                <PrimaryButton
-                  label="Save"
-                  onClick={submitForm}
-                  type="button"
-                />
-                {!!datasource?.name && !!onDelete && (
-                  <IconButton
-                    label="Delete"
-                    onClick={onDelete}
-                    icon={<BinLinearIcon size="small" />}
-                    type="button"
-                  />
-                )}
-              </Spacings.Inline>
-            </Spacings.Inline>
-          </div>
-          <Grid
-            gridGap="16px"
-            gridTemplateColumns="repeat(2, 1fr)"
-            gridAutoColumns="1fr"
-          >
-            <Grid.Item gridColumn="span 1">
-              <Spacings.Inline alignItems="center">
-                <FieldLabel title="Name" />
-                <TextInput
-                  value={values?.name}
-                  name="name"
-                  onChange={handleChange}
-                />
-              </Spacings.Inline>
-              {errors.name && (
-                <Text.Caption tone="warning">{errors.name}</Text.Caption>
-              )}
-            </Grid.Item>
-          </Grid>
+    <>
+      <CustomFormModalPage
+        title={
+          createNewMode
+            ? 'Create a new datasource'
+            : `Update ${datasource.name}`
+        }
+        isOpen={true}
+        onClose={onCancel}
+        formControls={
+          <>
+            <CustomFormModalPage.FormSecondaryButton
+              label="Cancel"
+              onClick={onCancel}
+            />
+            <CustomFormModalPage.FormPrimaryButton
+              label="Save"
+              onClick={formik.submitForm}
+              isDisabled={!formik.dirty}
+            />
+            {!!datasource?.name && !!onDelete && (
+              <IconButton
+                label="Delete"
+                onClick={confirmState.openModal}
+                icon={<BinLinearIcon size="10" />}
+                type="button"
+              />
+            )}
+          </>
+        }
+      >
+        <Grid
+          gridGap={designTokens.spacingM}
+          gridTemplateColumns="repeat(2, 1fr)"
+          gridAutoColumns="1fr"
+        >
+          <Grid.Item>
+            <TextField
+              title={'Name'}
+              value={formik.values.name || ''}
+              name="name"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              errors={TextField.toFieldErrors<TErrors>(formik.errors).name}
+              touched={!!formik.touched.name}
+            />
+          </Grid.Item>
           <Grid.Item gridColumn="span 2">
             <FieldLabel title="Query" />
+
             <Spacer />
             <AIGenerationButton onSelectAIGeneration={getGraphQLQueries}>
               {({ generatedQuery, isSuggestionArrived }) => (
@@ -131,22 +158,33 @@ const DatasourceForm = ({
                   query={
                     !isSuggestionArrived ? datasource.query : generatedQuery
                   }
-                  onUpdateQuery={(query) => setFieldValue('query', query)}
+                  onUpdateQuery={(query) =>
+                    formik.setFieldValue('query', query)
+                  }
                   variables={datasource.variables}
                   onUpdateVariables={(variables) =>
-                    setFieldValue('variables', variables)
+                    formik.setFieldValue('variables', variables)
                   }
                 />
               )}
             </AIGenerationButton>
+            <FieldErrors
+              errors={(formik.errors as TErrors).query}
+              isVisible={true}
+            />
           </Grid.Item>
-
-          {errors.query && (
-            <Text.Caption tone="warning">{errors.query}</Text.Caption>
-          )}
-        </Form>
-      )}
-    </Formik>
+        </Grid>
+      </CustomFormModalPage>
+      <ConfirmationDialog
+        isOpen={confirmState.isModalOpen}
+        onClose={confirmState.closeModal}
+        onConfirm={handleDeleteDatasource}
+        title="Delete datasource"
+        onCancel={confirmState.closeModal}
+      >
+        <Text.Body>Are you sure you want to delete this datasource?</Text.Body>
+      </ConfirmationDialog>
+    </>
   );
 };
 export default DatasourceForm;

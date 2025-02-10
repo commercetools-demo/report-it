@@ -7,13 +7,15 @@ type Props = {
 
 const NewDashboardButton = ({ openModal }: Props) => {
   return (
-    <IconButton
-      type="button"
-      onClick={() => openModal()}
-      label="Add dashboard"
-      icon={<PlusBoldIcon size="small" />}
-      size="small"
-    ></IconButton>
+    <div style={{ display: 'inline-block' }}>
+      <IconButton
+        type="button"
+        onClick={() => openModal()}
+        label="Add dashboard"
+        icon={<PlusBoldIcon size="10" />}
+        size="10"
+      />
+    </div>
   );
 };
 

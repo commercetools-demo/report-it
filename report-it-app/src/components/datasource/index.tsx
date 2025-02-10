@@ -4,6 +4,7 @@ import SelectedDatasources from './selected-datasources';
 import styled from 'styled-components';
 import AddFromDatasources from './add-from-datasources';
 import { Widget } from '../../types/widget';
+import { FC } from 'react';
 
 const Spacer = styled.div`
   height: 1rem;
@@ -15,10 +16,12 @@ interface Props {
   widget?: Widget;
   onSelect?: (keys: string[]) => void;
 }
-const Datasource: React.FC<Props> = ({ values, widget, onSelect }) => {
+const Datasource: FC<Props> = ({ values, widget, onSelect }) => {
   return (
     <Spacings.Stack scale="xl">
-      <Text.Headline>Selected datasources for this Widget</Text.Headline>
+      <Text.Headline as={'h2'}>
+        Selected datasources for this Widget
+      </Text.Headline>
       <SelectedDatasources values={values} widget={widget} />
       <Spacer />
       <Spacings.Inline scale="xl">

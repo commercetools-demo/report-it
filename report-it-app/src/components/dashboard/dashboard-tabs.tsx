@@ -2,25 +2,40 @@ import { useShowNotification } from '@commercetools-frontend/actions-global';
 import {
   ConfirmationDialog,
   Drawer,
+  TabularMainPage,
   useModalState,
 } from '@commercetools-frontend/application-components';
 import {
   NOTIFICATION_DOMAINS,
   NOTIFICATION_KINDS_SIDE,
 } from '@commercetools-frontend/constants';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { DashboardCustomObject } from '../../types/dashboard';
 import { DashboardTabPanel } from '../dashboard-tab-panel';
-import { TabPanels } from '../tab/panels';
-import { TabContext } from '../tab/tab-context';
-import { Tabs } from '../tab/tabs';
-import DashbaordForm from './dashboard-form';
-import DashboardTabButton from './dashboard-tab-button';
-import NewDashboardButton from './new-dashboard-button';
+import DashboardForm from './dashboard-form';
 import { useDashboardsStateContext } from './provider';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import Text from '@commercetools-uikit/text';
-const DashboardTabView = () => {
+import {
+  Route,
+  Switch,
+  useHistory,
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom';
+import TabHeader from '../tab/tab-header';
+import Spacings from '@commercetools-uikit/spacings';
+import SecondaryButton from '@commercetools-uikit/secondary-button';
+import { PlusBoldIcon } from '@commercetools-uikit/icons';
+import { useIsAuthorized } from '@commercetools-frontend/permissions';
+import { PERMISSIONS } from '../../constants';
+
+type Props = {
+  linkToHome: string;
+};
+
+const DashboardTabView: FC<Props> = ({ linkToHome }) => {
+  const { type } = useParams<{ type: string }>();
   const { isLoading, dashboards } = useDashboardsStateContext();
   const [selectedDashboard, setSelectedDashboard] =
     useState<DashboardCustomObject | null>();
@@ -29,7 +44,12 @@ const DashboardTabView = () => {
   const showNotification = useShowNotification();
   const drawerState = useModalState();
   const confirmState = useModalState();
+  const match = useRouteMatch();
+  const { replace } = useHistory();
 
+  const canManage = useIsAuthorized({
+    demandedPermissions: [PERMISSIONS.Manage],
+  });
   if (isLoading) {
     return (
       <div>
@@ -38,12 +58,12 @@ const DashboardTabView = () => {
     );
   }
 
-  const handleCreateDashbaord = async (dashbaord: DashboardCustomObject) => {
+  const handleCreateDashboard = async (dashboard: DashboardCustomObject) => {
     try {
       if (selectedDashboard) {
-        await updateDashboard?.(dashbaord);
+        await updateDashboard?.(dashboard);
       } else {
-        await createDashboard?.(dashbaord.value.name);
+        await createDashboard?.(dashboard.value.name);
       }
       showNotification({
         domain: NOTIFICATION_DOMAINS.SIDE,
@@ -91,35 +111,50 @@ const DashboardTabView = () => {
 
     drawerState.openModal();
   };
+
+  const dashboardCustomObjects = dashboards || [];
+
+  if (!type && dashboardCustomObjects.length > 0) {
+    replace(`${match.url}/${dashboardCustomObjects[0].key}`);
+  }
+
   return (
     <>
-      <TabContext defaultTab={0} paramName="dashboard">
-        {({ selectedTab, setSelectedTab }) => (
-          <>
-            <Tabs
-              selectedTab={selectedTab}
-              setSelectedTab={setSelectedTab}
-              additionalComponent={<NewDashboardButton openModal={openModal} />}
-            >
-              {dashboards?.map((dashboard) => (
-                <DashboardTabButton
-                  key={dashboard.id}
-                  dashbaord={dashboard}
-                  openModal={openModal}
-                />
-              ))}
-            </Tabs>
-            <TabPanels selectedTab={selectedTab}>
-              {dashboards?.map((dashboard) => (
-                <DashboardTabPanel
-                  dashboard={dashboard}
-                  key={dashboard.key}
-                ></DashboardTabPanel>
-              ))}
-            </TabPanels>
-          </>
-        )}
-      </TabContext>
+      <TabularMainPage
+        customTitleRow={
+          <Spacings.Inline justifyContent="space-between">
+            <span></span>
+            <SecondaryButton
+              iconLeft={<PlusBoldIcon />}
+              label={'Add new Tab'}
+              isDisabled={!canManage}
+              onClick={() => openModal()}
+            />
+          </Spacings.Inline>
+        }
+        tabControls={dashboardCustomObjects.map((dashboard, index) => {
+          return (
+            <TabHeader
+              key={index}
+              dashboardKey={dashboard.key}
+              to={`${linkToHome}/${dashboard.key}`}
+              label={dashboard.value.name}
+              exactPathMatch={true}
+              openModal={openModal}
+            />
+          );
+        })}
+      >
+        <Switch>
+          {dashboardCustomObjects.map((dashboard, index) => {
+            return (
+              <Route key={index} path={`${match.path}/${dashboard.key}`}>
+                <DashboardTabPanel dashboard={dashboard} key={dashboard.key} />
+              </Route>
+            );
+          })}
+        </Switch>
+      </TabularMainPage>
       <Drawer
         title={selectedDashboard ? 'Edit dashboard' : 'Add new dashboard'}
         isOpen={drawerState.isModalOpen}
@@ -127,8 +162,8 @@ const DashboardTabView = () => {
         hideControls
         size={10}
       >
-        <DashbaordForm
-          onSubmit={handleCreateDashbaord}
+        <DashboardForm
+          onSubmit={handleCreateDashboard}
           onCancel={drawerState.closeModal}
           onDelete={handleDeleteConfirmation}
           dashboard={selectedDashboard ?? undefined}

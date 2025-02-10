@@ -1,10 +1,5 @@
 import Constraints from '@commercetools-uikit/constraints';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Drawer,
-  useModalState,
-  ConfirmationDialog,
-} from '@commercetools-frontend/application-components';
 import DataTable from '@commercetools-uikit/data-table';
 import {
   useDataTableSortingState,
@@ -14,10 +9,11 @@ import { Pagination } from '@commercetools-uikit/pagination';
 import Spacings from '@commercetools-uikit/spacings';
 import DatasourceForm from '../datasource-form';
 import CheckboxInput from '@commercetools-uikit/checkbox-input';
-import Text from '@commercetools-uikit/text';
 import { Datasource, DatasourceResponse } from '../../../types/datasource';
 import { useDatasource } from '../../../hooks/use-datasource';
 import { PagedQueryResponse } from '../../../types/general';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { SuspendedRoute } from '@commercetools-frontend/application-shell';
 
 const columns = [
   { key: 'key', label: 'Key' },
@@ -41,6 +37,8 @@ const DatasourceDataTable = ({
   refreshData,
   onSelect,
 }: Props) => {
+  const match = useRouteMatch();
+  const { push } = useHistory();
   const tableSorting = useDataTableSortingState({ key: 'key', order: 'asc' });
   const [checkedRowsState, setCheckedRowsState] = useState<
     Record<string, boolean>
@@ -83,43 +81,16 @@ const DatasourceDataTable = ({
   }, [columns, checkedRowsState]);
 
   const { page, perPage } = usePaginationState();
-  const [selectedDatasourceResponse, setSelectedDatasourceResponse] =
-    useState<DatasourceResponse>();
 
-  const { updateDatasource, deleteDatasource } = useDatasource();
+  const { updateDatasource } = useDatasource();
 
-  const drawerState = useModalState();
-  const confirmState = useModalState();
-
-  const handleUpdateDatasource = async (datasource: Datasource) => {
-    const result = await updateDatasource(
-      selectedDatasourceResponse?.key || '',
-      datasource
-    );
+  const handleUpdateDatasource = async (
+    datasource: Datasource,
+    datasourceKey?: string
+  ) => {
+    await updateDatasource(datasourceKey || '', datasource);
 
     refreshData?.();
-    if (!!result) {
-      drawerState.closeModal();
-    }
-  };
-
-  const handleDeleteConfirmation = () => {
-    if (!selectedDatasourceResponse?.key) {
-      return;
-    }
-
-    confirmState.openModal();
-  };
-
-  const handleDeleteDatasource = async () => {
-    await deleteDatasource(selectedDatasourceResponse?.key || '');
-    refreshData?.();
-    confirmState.closeModal();
-  };
-
-  const handleOpenModal = (datasource: DatasourceResponse) => {
-    setSelectedDatasourceResponse(datasource);
-    drawerState.openModal();
   };
 
   useEffect(() => {
@@ -153,7 +124,7 @@ const DatasourceDataTable = ({
           sortedBy={tableSorting.value.key}
           sortDirection={tableSorting.value.order}
           onSortChange={tableSorting.onChange}
-          onRowClick={handleOpenModal}
+          onRowClick={(row) => push(`${match.url}/edit/${row.key}`)}
         />
         <Pagination
           page={page.value}
@@ -163,29 +134,18 @@ const DatasourceDataTable = ({
           totalItems={datasources.count ?? 0}
         />
       </Spacings.Stack>
-      <Drawer
-        title={`Edit ${selectedDatasourceResponse?.key}`}
-        isOpen={drawerState.isModalOpen}
-        onClose={drawerState.closeModal}
-        hideControls
-        size={30}
-      >
+      <SuspendedRoute path={`${match.path}/edit/:rowKey`}>
         <DatasourceForm
           onSubmit={handleUpdateDatasource}
-          onCancel={drawerState.closeModal}
-          onDelete={handleDeleteConfirmation}
-          datasource={selectedDatasourceResponse?.value}
+          onCancel={() => push(match.url)}
+          createNewMode={false}
+          dataSources={datasources.results}
+          onDelete={() => {
+            refreshData && refreshData();
+            push(`${match.url}`);
+          }}
         />
-      </Drawer>
-      <ConfirmationDialog
-        isOpen={confirmState.isModalOpen}
-        onClose={confirmState.closeModal}
-        onConfirm={handleDeleteDatasource}
-        title="Delete datasource"
-        onCancel={confirmState.closeModal}
-      >
-        <Text.Body>Are you sure you want to delete this datasource?</Text.Body>
-      </ConfirmationDialog>
+      </SuspendedRoute>
     </Constraints.Horizontal>
   );
 };

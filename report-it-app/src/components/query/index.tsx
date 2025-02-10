@@ -1,6 +1,5 @@
-import React from 'react';
 import styled from 'styled-components';
-import { FormikErrors } from 'formik';
+import { useFormikContext } from 'formik';
 import { Widget } from '../../types/widget';
 import { useQueryUtils } from '../../hooks/use-query-utils';
 import { TablePreview } from './table-preview';
@@ -64,31 +63,20 @@ const NoDataMessage = styled.p`
   font-size: 0.875rem;
 `;
 
-type Props = {
-  errors: FormikErrors<Widget>;
-  values: Widget;
-  widget?: Widget;
-  handleChange: any;
-  setFieldValue: any;
-};
-
 export const PREVIEW_ROWS = 5;
 
-const WidgetQuery: React.FC<Props> = ({
-  handleChange,
-  values,
-  setFieldValue,
-}) => {
+const WidgetQuery = () => {
+  const formik = useFormikContext<Widget>();
   const { executeQuery, queryResult, error } = useQueryUtils();
   const { getAlaSQLQueries } = useOpenAI();
 
   const handleGetAlaSQLQueries = async (seed: string): Promise<string> => {
     const result = await getAlaSQLQueries(seed);
-    setFieldValue('config.sqlQuery', result);
+    formik.setFieldValue('config.sqlQuery', result);
     return result;
   };
 
-  if (!values.config?.datasources?.length) {
+  if (!formik.values.config?.datasources?.length) {
     return (
       <div>
         <Text.Caption tone="warning">
@@ -112,9 +100,9 @@ const WidgetQuery: React.FC<Props> = ({
         <AIGenerationButton onSelectAIGeneration={handleGetAlaSQLQueries}>
           {() => (
             <QueryTextarea
-              value={values.config?.sqlQuery}
+              value={formik.values.config?.sqlQuery}
               name="config.sqlQuery"
-              onChange={handleChange}
+              onChange={formik.handleChange}
               placeholder="Enter your SQL query here..."
             />
           )}
@@ -122,8 +110,8 @@ const WidgetQuery: React.FC<Props> = ({
         <PrimaryButton
           label="Execute Query"
           type="button"
-          isDisabled={!values.config?.sqlQuery}
-          onClick={() => executeQuery(values.config?.sqlQuery!)}
+          isDisabled={!formik.values.config?.sqlQuery}
+          onClick={() => executeQuery(formik.values.config?.sqlQuery!)}
         ></PrimaryButton>
       </Card>
 

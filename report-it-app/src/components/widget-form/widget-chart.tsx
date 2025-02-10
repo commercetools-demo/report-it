@@ -1,4 +1,4 @@
-import { FormikErrors } from 'formik';
+import { useFormikContext } from 'formik';
 import { useMemo } from 'react';
 import { Widget } from '../../types/widget';
 import Text from '@commercetools-uikit/text';
@@ -12,14 +12,6 @@ import {
   GoogleChartWrapperChartType,
 } from 'react-google-charts';
 import ChartFields from './chart-fields';
-
-type Props = {
-  errors: FormikErrors<Widget>;
-  values: Widget;
-  widget?: Widget;
-  handleChange: any;
-  setFieldValue: any;
-};
 
 export const StyledBorder = styled.div`
   border-bottom: 1px solid #e2e8f0;
@@ -63,28 +55,32 @@ const StyledDiv = styled.div`
   height: 300px;
 `;
 
-const WidgetChart = ({ values, handleChange, setFieldValue }: Props) => {
+const WidgetChart = () => {
+  const formik = useFormikContext<Widget>();
   const { getChartData, error } = useQueryUtils();
 
   const { chartData, headers } = useMemo(() => {
-    return getChartData(values.config?.sqlQuery!, values.config?.chartFields);
-  }, [values.config?.chartFields]);
+    return getChartData(
+      formik.values.config?.sqlQuery!,
+      formik.values.config?.chartFields
+    );
+  }, [formik.values.config?.chartFields]);
 
   return (
     <Spacings.Stack>
       <SelectField
         title="Chart Type"
         name="config.chartType"
-        value={values?.config?.chartType}
+        value={formik.values?.config?.chartType}
         options={GoogleChartWrapperCharts.map((chartType) => ({
           value: chartType,
           label: chartType,
         }))}
-        onChange={handleChange}
+        onChange={formik.handleChange}
       ></SelectField>
 
       {!!error && <Text.Caption tone="warning">{error}</Text.Caption>}
-      {!values?.config?.sqlQuery && (
+      {!formik.values?.config?.sqlQuery && (
         <Text.Caption tone="warning">
           No SQL Query has been provided
         </Text.Caption>
@@ -95,9 +91,9 @@ const WidgetChart = ({ values, handleChange, setFieldValue }: Props) => {
           {/* TODO: refresh chart when this changes */}
           <ChartFields
             defaultValues={headers}
-            config={values?.config}
+            config={formik.values?.config}
             configName="config"
-            onChange={handleChange}
+            onChange={formik.handleChange}
           />
         </Spacings.Stack>
       )}
@@ -106,11 +102,13 @@ const WidgetChart = ({ values, handleChange, setFieldValue }: Props) => {
         <StyledDiv>
           <FieldLabel title="Chart preview" />
           <GoogleChart
-            chartType={values?.config?.chartType as GoogleChartWrapperChartType}
+            chartType={
+              formik.values?.config?.chartType as GoogleChartWrapperChartType
+            }
             data={chartData}
             options={{
-              title: values.name,
-              colors: values?.config?.colors,
+              title: formik.values.name,
+              colors: formik.values?.config?.colors,
             }}
             legendToggle
           />

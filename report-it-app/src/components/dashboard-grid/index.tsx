@@ -7,9 +7,11 @@ import { useDashboardPanelStateContext } from '../dashboard-tab-panel/provider';
 import Widget from '../widget';
 import WidgetEditButton from '../widget/widget-edit-button';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
-const StyledWrapper = styled.div<{ hasWidgets?: boolean }>`
+const StyledWrapper = styled.div<{ $hasWidgets?: boolean }>`
   position: relative;
+  flex: 1;
   min-width: 400px;
   @media (min-width: 768px) {
     min-width: 990px;
@@ -17,16 +19,14 @@ const StyledWrapper = styled.div<{ hasWidgets?: boolean }>`
   @media (min-width: 1024px) {
     min-width: 1280px;
   }
-  ${(props) => (props.hasWidgets ? '' : 'height: 160px;')}
+  ${(props) => (props.$hasWidgets ? '' : 'height: 160px;')}
 `;
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const DashboardGrid = ({
-  onSelectWidget,
-}: {
-  onSelectWidget: (widgetKey: string) => void;
-}) => {
+const DashboardGrid = () => {
   const { isLoading, widgets } = useDashboardPanelStateContext();
+  const { push } = useHistory();
+  const match = useRouteMatch();
 
   const onLayoutChange = useCallback(
     (newWidgets: WidgetLayout[]) => {
@@ -59,10 +59,10 @@ const DashboardGrid = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onSelectWidget(widget.key);
+              push(match.url + '/edit/' + widget.key);
             }}
             title="Edit widget"
-          ></WidgetEditButton>
+          />
           <Widget widget={widget} />
         </div>
       );
@@ -70,7 +70,7 @@ const DashboardGrid = ({
   }, [widgets]);
 
   return (
-    <StyledWrapper hasWidgets={!!widgets?.length}>
+    <StyledWrapper $hasWidgets={!!widgets?.length}>
       {isLoading && (
         <div>
           <LoadingSpinner />

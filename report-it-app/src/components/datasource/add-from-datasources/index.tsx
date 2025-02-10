@@ -1,15 +1,10 @@
-import {
-  Drawer,
-  useModalState,
-} from '@commercetools-frontend/application-components';
-import { BackIcon, PlusBoldIcon } from '@commercetools-uikit/icons';
-import FlatButton from '@commercetools-uikit/flat-button';
+import { PlusBoldIcon } from '@commercetools-uikit/icons';
 import PrimaryButton from '@commercetools-uikit/primary-button';
-import NewDatasource from '../create-new-datasource';
-import Spacings from '@commercetools-uikit/spacings';
-import Text from '@commercetools-uikit/text';
-import AllDatasources from '../all-datasources';
 import { Widget } from '../../../types/widget';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { SuspendedRoute } from '@commercetools-frontend/application-shell';
+import { lazy } from 'react';
+const PickDatasource = lazy(() => import('../pick-datasource/pick-datasource'));
 
 interface Props {
   onSelect?: (keys: string[]) => void;
@@ -17,39 +12,24 @@ interface Props {
   values?: Widget;
 }
 const AddFromDatasources = ({ onSelect, values }: Props) => {
-  const drawerState = useModalState();
   const selectedDatasources = values?.config?.datasources?.map((d) => d.key);
+  const match = useRouteMatch();
+  const { push } = useHistory();
 
   return (
     <>
       <PrimaryButton
         iconLeft={<PlusBoldIcon />}
         label="Pick from datasources"
-        onClick={drawerState.openModal}
+        onClick={() => push(`${match.url}/pick`)}
       />
-      <Drawer
-        title="Pick a datasource"
-        isOpen={drawerState.isModalOpen}
-        onClose={drawerState.closeModal}
-        hideControls
-        size={20}
-      >
-        <Spacings.Stack scale="l">
-          <Spacings.Inline justifyContent="space-between" alignItems="center">
-            <FlatButton
-              label="Back"
-              icon={<BackIcon />}
-              onClick={drawerState.closeModal}
-            />
-            <NewDatasource />
-          </Spacings.Inline>
-          <Text.Headline>Pick from all Datasources</Text.Headline>
-          <AllDatasources
-            selectedDatasources={selectedDatasources}
-            onSelect={onSelect}
-          />
-        </Spacings.Stack>
-      </Drawer>
+      <SuspendedRoute path={`${match.path}/pick`}>
+        <PickDatasource
+          onClose={() => push(`${match.url}`)}
+          selectedDatasources={selectedDatasources}
+          onSelect={onSelect}
+        />
+      </SuspendedRoute>
     </>
   );
 };
