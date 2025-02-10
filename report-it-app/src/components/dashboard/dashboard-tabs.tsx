@@ -57,7 +57,7 @@ const DashboardTabView: React.FC<Props> = ({ linkToHome }) => {
     );
   }
 
-  const handleCreateDashbaord = async (dashboard: DashboardCustomObject) => {
+  const handleCreateDashboard = async (dashboard: DashboardCustomObject) => {
     try {
       if (selectedDashboard) {
         await updateDashboard?.(dashboard);
@@ -114,7 +114,7 @@ const DashboardTabView: React.FC<Props> = ({ linkToHome }) => {
   const dashboardCustomObjects = dashboards || [];
 
   if (!type && dashboardCustomObjects.length > 0) {
-    replace(match.url + '/' + dashboardCustomObjects[0].id);
+    replace(`${match.url}/${dashboardCustomObjects[0].key}`);
   }
 
   return (
@@ -162,7 +162,7 @@ const DashboardTabView: React.FC<Props> = ({ linkToHome }) => {
         size={10}
       >
         <DashboardForm
-          onSubmit={handleCreateDashbaord}
+          onSubmit={handleCreateDashboard}
           onCancel={drawerState.closeModal}
           onDelete={handleDeleteConfirmation}
           dashboard={selectedDashboard ?? undefined}
