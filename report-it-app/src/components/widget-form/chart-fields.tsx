@@ -135,7 +135,7 @@ const DraggableList = ({ configName, defaultValues }: Props) => {
   const [isSortable, setIsSortable] = useState(false);
 
   const chartFieldItems =
-    formik.values.config?.chartFields.map((item, index) => ({
+    formik.values.config?.chartFields?.map((item, index) => ({
       ...item,
       id: index,
     })) || [];

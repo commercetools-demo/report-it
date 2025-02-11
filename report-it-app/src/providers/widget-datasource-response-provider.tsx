@@ -56,6 +56,51 @@ const WidgetDatasourceResponseProvider = ({
 
   const widgetKey = widgetKeyProp?.split('--')[1];
 
+  const processArrayData = (
+    data: any[],
+    parentTableName: string,
+    parentForeignKey: any = null
+  ) => {
+    const schema = getSchema(data);
+
+    schema.forEach((schemaItem) => {
+      if (schemaItem.type === 'array') {
+        const tableName = `${parentTableName}_${schemaItem.column}`;
+
+        const relatedData = data.reduce((acc, row) => {
+          const arrayItems = row[schemaItem.column].map((item: any) => ({
+            ...item,
+            fk:
+              typeof parentForeignKey === 'string' ? parentForeignKey : row.id,
+          }));
+
+          // Recursively process nested arrays
+          arrayItems.forEach((item: any) => {
+            Object.entries(item).forEach(([key, value]) => {
+              if (Array.isArray(value)) {
+                processArrayData(
+                  [item],
+                  `${tableName}`,
+                  item.id || parentForeignKey || row.id
+                );
+              }
+            });
+          });
+
+          return acc.concat(arrayItems);
+        }, []);
+
+        // Create table if it doesn't exist
+        if (!alasql.tables[tableName]) {
+          alasql(`CREATE TABLE ${tableName}`);
+          alasql.tables[tableName].data = [];
+        }
+
+        alasql.tables[tableName].data.push(...relatedData);
+      }
+    });
+  };
+
   const createTables = useCallback(
     (dts: Record<string, { results: any[] }>) => {
       if (!widgetKey || !dts) return;
@@ -98,27 +143,7 @@ const WidgetDatasourceResponseProvider = ({
           }
         });
 
-        const schema = getSchema(dts[datasourceName].results);
-
-        schema.forEach((schemaItem) => {
-          if (schemaItem.type === 'array') {
-            const tableName = `${datasourceName}_${schemaItem.column}`;
-            // console.log('tableName', tableName);
-            const relatedData = dts[datasourceName].results.reduce(
-              (acc, row) => {
-                return acc.concat(
-                  row[schemaItem.column].map((item: any) => ({
-                    ...item,
-                    fk: row.id,
-                  }))
-                );
-              },
-              []
-            );
-
-            alasql.tables[tableName].data.push(...relatedData);
-          }
-        });
+        processArrayData(dts[datasourceName].results, datasourceName);
       });
     },
     [widgetKey]
