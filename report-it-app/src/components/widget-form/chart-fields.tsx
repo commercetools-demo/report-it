@@ -20,6 +20,97 @@ import ToggleInput from '@commercetools-uikit/toggle-input';
 import IconButton from '@commercetools-uikit/icon-button';
 import TextField from '@commercetools-uikit/text-field';
 import FieldLabel from '@commercetools-uikit/field-label';
+import { designTokens, themes } from '@commercetools-uikit/design-system';
+
+const colors = [
+  themes.default.colorPrimary,
+  themes.default.colorPrimary10,
+  themes.default.colorPrimary20,
+  themes.default.colorPrimary25,
+  themes.default.colorPrimary30,
+  themes.default.colorPrimary40,
+  themes.default.colorPrimary85,
+  themes.default.colorPrimary90,
+  themes.default.colorPrimary95,
+  themes.default.colorPrimary98,
+  themes.default.colorAccent,
+  themes.default.colorAccent10,
+  themes.default.colorAccent20,
+  themes.default.colorAccent30,
+  themes.default.colorAccent40,
+  themes.default.colorAccent50,
+  themes.default.colorAccent60,
+  themes.default.colorAccent85,
+  themes.default.colorAccent90,
+  themes.default.colorAccent95,
+  themes.default.colorAccent98,
+  themes.default.colorBrown10,
+  themes.default.colorBrown20,
+  themes.default.colorBrown35,
+  themes.default.colorBrown50,
+  themes.default.colorBrown70,
+  themes.default.colorBrown85,
+  themes.default.colorBrown90,
+  themes.default.colorBrown95,
+  themes.default.colorBrown98,
+  themes.default.colorPurple10,
+  themes.default.colorPurple20,
+  themes.default.colorPurple35,
+  themes.default.colorPurple50,
+  themes.default.colorPurple70,
+  themes.default.colorPurple85,
+  themes.default.colorPurple90,
+  themes.default.colorPurple95,
+  themes.default.colorPurple98,
+  themes.default.colorTurquoise10,
+  themes.default.colorTurquoise20,
+  themes.default.colorTurquoise35,
+  themes.default.colorTurquoise50,
+  themes.default.colorTurquoise70,
+  themes.default.colorTurquoise85,
+  themes.default.colorTurquoise90,
+  themes.default.colorTurquoise95,
+  themes.default.colorTurquoise98,
+  themes.default.colorNeutral,
+  themes.default.colorNeutral05,
+  themes.default.colorNeutral10,
+  themes.default.colorNeutral40,
+  themes.default.colorNeutral50,
+  themes.default.colorNeutral60,
+  themes.default.colorNeutral85,
+  themes.default.colorNeutral90,
+  themes.default.colorNeutral95,
+  themes.default.colorNeutral98,
+  themes.default.colorInfo,
+  themes.default.colorInfo40,
+  themes.default.colorInfo50,
+  themes.default.colorInfo60,
+  themes.default.colorInfo85,
+  themes.default.colorInfo90,
+  themes.default.colorInfo95,
+  themes.default.colorWarning,
+  themes.default.colorWarning25,
+  themes.default.colorWarning40,
+  themes.default.colorWarning60,
+  themes.default.colorWarning85,
+  themes.default.colorWarning95,
+  themes.default.colorError,
+  themes.default.colorError25,
+  themes.default.colorError40,
+  themes.default.colorError85,
+  themes.default.colorError95,
+  themes.default.colorSolid,
+  themes.default.colorSolid02,
+  themes.default.colorSolid05,
+  themes.default.colorSolid10,
+  themes.default.colorSurface,
+  themes.default.colorTransparent,
+  themes.default.colorSuccess,
+  themes.default.colorSuccess25,
+  themes.default.colorSuccess40,
+  themes.default.colorSuccess85,
+  themes.default.colorSuccess95,
+];
 
 type Props = {
   configName: string;
@@ -29,9 +120,11 @@ type Props = {
 type ChartFieldItemWithId = ChartFieldItemType & { id: number };
 
 const StyledColorPicker = styled.input`
-  width: 30px;
+  width: 75px;
   height: 30px;
-  border: 2px solid #e2e8f0;
+  border: ${designTokens.borderWidth1} solid ${designTokens.borderColorForInput};
+  border-radius: ${designTokens.borderRadiusForInput};
+  background-color: ${designTokens.backgroundColorForInput};
   cursor: pointer;
   outline: none;
 `;
@@ -69,6 +162,22 @@ const DraggableList = ({ configName, defaultValues }: Props) => {
         label: header,
       }));
   }, [defaultValues]);
+
+  const hslRegex =
+    /^hsl\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)$/i;
+
+  function hslToHex(h: number, s: number, l: number) {
+    l /= 100;
+    const a = (s * Math.min(l, 1 - l)) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color)
+        .toString(16)
+        .padStart(2, '0'); // convert to Hex and prefix "0" if needed
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
 
   return (
     <FieldArray name={name}>
@@ -146,15 +255,40 @@ const DraggableList = ({ configName, defaultValues }: Props) => {
                   }
                   case 'color': {
                     return index !== 0 ? (
-                      <StyledColorPicker
-                        value={formik.values.config?.colors?.[index - 1]}
-                        name={`${configName}.colors.${index - 1}`}
-                        onChange={formik.handleChange}
-                        title="Color"
-                        placeholder="Color"
-                        type="color"
-                        disabled={isSortable}
-                      />
+                      <>
+                        <StyledColorPicker
+                          value={formik.values.config?.colors?.[index - 1]}
+                          name={`${configName}.colors.${index - 1}`}
+                          onChange={formik.handleChange}
+                          title="Color"
+                          placeholder="Color"
+                          type="color"
+                          disabled={isSortable}
+                          list="presetColors"
+                        />
+                        <datalist id="presetColors">
+                          {colors
+                            .map((color) => {
+                              if (color.startsWith('#')) {
+                                return color;
+                              }
+                              const match = color.match(hslRegex);
+                              if (match) {
+                                const [_all, h, s, l] = match;
+                                return hslToHex(
+                                  parseInt(h, 10),
+                                  parseInt(s, 10),
+                                  parseInt(l, 10)
+                                );
+                              }
+                              return undefined;
+                            })
+                            .filter(Boolean)
+                            .map((color, index) => {
+                              return <option key={index}>{color}</option>;
+                            })}
+                        </datalist>
+                      </>
                     ) : (
                       <></>
                     );
