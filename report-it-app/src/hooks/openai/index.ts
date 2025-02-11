@@ -5,14 +5,15 @@ import {
 } from '@commercetools-frontend/constants';
 import OpenAI from 'openai';
 import { useQueryUtils } from '../use-query-utils';
-import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import { useOpenAiConfigurationContext } from '../../providers/open-ai';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 
 export const useOpenAI = () => {
   const { apiKey, alaSqlonversationId, graphQLConversationId } =
     useOpenAiConfigurationContext();
   const showNotification = useShowNotification();
-  const { datasources } = useWidgetDatasourceResponseContext();
+  const { tables: sqlTables } = useWidgetDatasourceResponseContext();
+
   const { getSchema } = useQueryUtils();
 
   const getGraphQLQueries = async (seed: string): Promise<string> => {
@@ -61,7 +62,7 @@ export const useOpenAI = () => {
   };
 
   const getAlaSQLQueries = async (queries: string): Promise<string> => {
-    if (!apiKey || !alaSqlonversationId) {
+    if (!apiKey || !alaSqlonversationId || !sqlTables) {
       return '';
     }
     const result: string[] = [];
@@ -75,10 +76,10 @@ export const useOpenAI = () => {
       );
       const thread = await openai.beta.threads.create();
 
-      const tables = Object.keys(datasources).join(', ');
-      const schemas = Object.keys(datasources).map((name) => ({
+      const tables = Object.keys(sqlTables).join(', ');
+      const schemas = Object.keys(sqlTables).map((tableName) => ({
         tableName: name,
-        schema: getSchema(datasources[name]?.results),
+        schema: getSchema(sqlTables[tableName]?.data),
       }));
 
       await openai.beta.threads.messages.create(thread.id, {

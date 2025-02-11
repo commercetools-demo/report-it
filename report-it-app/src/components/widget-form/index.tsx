@@ -189,6 +189,7 @@ const WidgetForm = ({ onSubmit, onDelete, onExport, onClose }: Props) => {
       >
         <DatasourceStateProvider>
           <WidgetDatasourceResponseProvider
+            widgetKey={widget?.key}
             availableDatasourceKeys={availableDatasourceKeys}
           >
             <Switch>

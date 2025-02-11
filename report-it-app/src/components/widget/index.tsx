@@ -40,6 +40,7 @@ const Widget = ({ widget }: Props) => {
   }
   return (
     <WidgetDatasourceResponseProvider
+      widgetKey={widget.key}
       availableDatasourceKeys={value.config.datasources.map((d) => d.key)}
     >
       <Chart {...value.config} name={value.name} />

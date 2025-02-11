@@ -1,10 +1,10 @@
 import CollapsibleMotion from '@commercetools-uikit/collapsible-motion';
 import SecondaryButton from '@commercetools-uikit/secondary-button';
 import styled from 'styled-components';
-import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import { useQueryUtils } from '../../hooks/use-query-utils';
 import { SchemaView } from './schema-view';
 import { TablePreview } from './table-preview';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 
 const Container = styled.div`
   display: flex;
@@ -19,11 +19,12 @@ const CollapsibleWrapper = styled.div`
 `;
 
 const Previews = () => {
-  const { datasources } = useWidgetDatasourceResponseContext();
+  const { tables } = useWidgetDatasourceResponseContext();
+
   const { getSchema } = useQueryUtils();
   return (
     <div>
-      {Object.keys(datasources).map((name) => (
+      {Object.keys(tables || {}).map((name) => (
         <CollapsibleMotion key={name || 'unnamed'} isDefaultClosed>
           {({ isOpen, toggle, containerStyles, registerContentNode }) => (
             <CollapsibleWrapper>
@@ -39,12 +40,12 @@ const Previews = () => {
               <div style={containerStyles}>
                 <Container ref={registerContentNode}>
                   <TablePreview
-                    data={datasources[name]?.results}
-                    title={`Table: ${name || 'unnamed'}`}
+                    name={name || 'unnamed'}
+                    data={tables?.[name]?.data}
                   />
                   <SchemaView
                     name={name || 'unnamed'}
-                    schema={getSchema(datasources[name]?.results)}
+                    schema={getSchema(tables?.[name]?.data)}
                   />
                 </Container>
               </div>

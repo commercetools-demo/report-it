@@ -34,11 +34,10 @@ const Chart = ({
   name,
   chartFields,
 }: Props) => {
-  const { getChartData } = useQueryUtils();
-
-  const { chartData, headers } = useMemo(() => {
+  const { getChartData } = useWidgetDatasourceResponseContext();
+  const { chartData } = useMemo(() => {
     return getChartData(sqlQuery!, chartFields);
-  }, []);
+  }, [getChartData]);
 
   if (!chartData.length) {
     return (

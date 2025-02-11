@@ -1,11 +1,11 @@
-import EnabledDropArea from '../enabled'
-import FileDropped from '../file-dropped'
+import EnabledDropArea from '../enabled';
+import FileDropped from '../file-dropped';
 
 interface Props {
-  isFileDropped: boolean
+  isFileDropped: boolean;
 }
 
 export default function ActiveDragDropArea({ isFileDropped }: Props) {
-  if (isFileDropped) return <FileDropped />
-  return <EnabledDropArea />
+  if (isFileDropped) return <FileDropped />;
+  return <EnabledDropArea />;
 }

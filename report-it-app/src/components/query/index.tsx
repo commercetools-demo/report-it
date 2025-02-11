@@ -1,13 +1,15 @@
 import styled from 'styled-components';
 import { useFormikContext } from 'formik';
-import { Widget } from '../../types/widget';
+import { Widget, WidgetResponse } from '../../types/widget';
 import { useQueryUtils } from '../../hooks/use-query-utils';
-import { TablePreview } from './table-preview';
 import Previews from './previews';
 import PrimaryButton from '@commercetools-uikit/primary-button';
 import Text from '@commercetools-uikit/text';
 import AIGenerationButton from '../ai-generation/ai-generation-button';
 import { useOpenAI } from '../../hooks/openai';
+import ErrorBoundary from '../error-boundary';
+import DataTable from '@commercetools-uikit/data-table';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 
 // Styled Components
 const Container = styled.div`
@@ -67,13 +69,21 @@ export const PREVIEW_ROWS = 5;
 
 const WidgetQuery = () => {
   const formik = useFormikContext<Widget>();
-  const { executeQuery, queryResult, error } = useQueryUtils();
+  const { flattenObject } = useQueryUtils();
   const { getAlaSQLQueries } = useOpenAI();
-
+  const { executeQuery, queryResult, error } =
+    useWidgetDatasourceResponseContext();
   const handleGetAlaSQLQueries = async (seed: string): Promise<string> => {
     const result = await getAlaSQLQueries(seed);
     formik.setFieldValue('config.sqlQuery', result);
     return result;
+  };
+
+  const getHeaders = () => {
+    return Object.keys(queryResult?.[0] || {}).map((key) => ({
+      key,
+      label: key,
+    }));
   };
 
   if (!formik.values.config?.datasources?.length) {
@@ -121,14 +131,23 @@ const WidgetQuery = () => {
       {queryResult && (
         <Card>
           <CardTitle>Query Results</CardTitle>
-          {Array.isArray(queryResult) && queryResult.length > 0 ? (
-            <TablePreview
-              data={queryResult}
-              title={`Results (First ${PREVIEW_ROWS} rows)`}
-            />
-          ) : (
-            <NoDataMessage>Query returned no results</NoDataMessage>
-          )}
+          <ErrorBoundary>
+            {Array.isArray(queryResult) && queryResult.length > 0 ? (
+              <DataTable<NonNullable<any>>
+                isCondensed
+                columns={getHeaders()}
+                rows={queryResult.slice(0, PREVIEW_ROWS)}
+                itemRenderer={(item, column) => {
+                  const flatRow = flattenObject(item);
+                  return flatRow[column.key] === null
+                    ? 'null'
+                    : String(flatRow[column.key] || '');
+                }}
+              />
+            ) : (
+              <NoDataMessage>Query returned no results</NoDataMessage>
+            )}
+          </ErrorBoundary>
         </Card>
       )}
     </Container>

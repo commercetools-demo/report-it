@@ -15,26 +15,25 @@ const NoDataMessage = styled.p`
   font-size: 0.875rem;
 `;
 
-export const TablePreview = ({ data, title }) => {
+export const TablePreview = ({ name, data }: { name: string; data: any[] }) => {
   const { flattenObject } = useQueryUtils();
-  if (!Array.isArray(data) || !data.length) {
+
+  if (!data) {
     return (
       <div>
-        <TableTitle>{title}</TableTitle>
         <NoDataMessage>No data available</NoDataMessage>
       </div>
     );
   }
 
-  const flattenedFirstRow = flattenObject(data[0]);
-  const headers = Object.keys(flattenedFirstRow).map((key) => ({
+  const headers = Object.keys(data?.[0] || {}).map((key) => ({
     key,
     label: key,
   }));
 
   return (
     <div>
-      <TableTitle>{title}</TableTitle>
+      <TableTitle>{name}</TableTitle>
 
       <DataTable<NonNullable<any>>
         isCondensed

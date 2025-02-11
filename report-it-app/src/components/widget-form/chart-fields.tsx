@@ -139,8 +139,8 @@ const DraggableList = ({
                     <Spacings.Stack>
                       <FieldLabel title="Color" />
                       <StyledColorPicker
-                        value={config.colors?.[index-1]}
-                        name={`${configName}.colors.${index-1}`}
+                        value={config.colors?.[index - 1]}
+                        name={`${configName}.colors.${index - 1}`}
                         onChange={onChange}
                         title="Color"
                         placeholder="Color"

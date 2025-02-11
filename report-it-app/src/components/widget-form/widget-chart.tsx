@@ -5,13 +5,13 @@ import Text from '@commercetools-uikit/text';
 import Spacings from '@commercetools-uikit/spacings';
 import SelectField from '@commercetools-uikit/select-field';
 import FieldLabel from '@commercetools-uikit/field-label';
-import { useQueryUtils } from '../../hooks/use-query-utils';
 import styled from 'styled-components';
 import {
   Chart as GoogleChart,
   GoogleChartWrapperChartType,
 } from 'react-google-charts';
 import ChartFields from './chart-fields';
+import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 
 export const StyledBorder = styled.div`
   border-bottom: 1px solid #e2e8f0;
@@ -57,7 +57,7 @@ const StyledDiv = styled.div`
 
 const WidgetChart = () => {
   const formik = useFormikContext<Widget>();
-  const { getChartData, error } = useQueryUtils();
+  const { getChartData, error } = useWidgetDatasourceResponseContext();
 
   const { chartData, headers } = useMemo(() => {
     return getChartData(
