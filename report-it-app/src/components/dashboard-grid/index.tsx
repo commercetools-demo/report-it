@@ -24,19 +24,21 @@ const StyledWrapper = styled.div<{ $hasWidgets?: boolean }>`
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DashboardGrid = () => {
-  const { isLoading, widgets } = useDashboardPanelStateContext();
+  const { isLoading, widgets, updateWidget, refresh } =
+    useDashboardPanelStateContext();
   const { push } = useHistory();
   const match = useRouteMatch();
 
   const onLayoutChange = useCallback(
-    (newWidgets: WidgetLayout[]) => {
+    async (newWidgets: WidgetLayout[]) => {
       const newWidgetArr = widgets ? [...widgets] : [];
-      newWidgetArr.forEach((widget) => {
-        const found = newWidgets.find((item) => item.i === widget.id);
+      for (const widget of newWidgetArr) {
+        const found = newWidgets.find((item) => item.i === widget.key);
         if (!!found && widget.value) {
-          widget.value.layout = found;
+          await updateWidget(widget.key, { ...widget.value, layout: found });
+          await refresh();
         }
-      });
+      }
       //   setWidgets?.(newWidgetArr);
     },
     [widgets]
