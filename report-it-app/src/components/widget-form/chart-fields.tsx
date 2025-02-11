@@ -1,19 +1,32 @@
-import React, { useMemo, useState } from 'react';
-import styled from 'styled-components';
-import { DragIcon, BinLinearIcon } from '@commercetools-uikit/icons';
-import TextField from '@commercetools-uikit/text-field';
-import ToggleInput from '@commercetools-uikit/toggle-input';
-import FieldLabel from '@commercetools-uikit/field-label';
-import IconButton from '@commercetools-uikit/icon-button';
+import { useMemo, useState } from 'react';
 import SelectField from '@commercetools-uikit/select-field';
-import { Widget } from '../../types/widget';
+import {
+  Widget,
+  ChartFieldItem as ChartFieldItemType,
+} from '../../types/widget';
 import { FieldArray, useFormikContext } from 'formik';
+import { DragEndEvent } from '@dnd-kit/core';
+import { ArrayHelpers } from 'formik/dist/FieldArray';
+import Table from '../table';
+import SecondaryButton from '@commercetools-uikit/secondary-button';
+import {
+  BinLinearIcon,
+  DragDropIcon,
+  DragIcon,
+} from '@commercetools-uikit/icons';
 import Spacings from '@commercetools-uikit/spacings';
+import styled from 'styled-components';
+import ToggleInput from '@commercetools-uikit/toggle-input';
+import IconButton from '@commercetools-uikit/icon-button';
+import TextField from '@commercetools-uikit/text-field';
+import FieldLabel from '@commercetools-uikit/field-label';
 
 type Props = {
   configName: string;
   defaultValues: string[];
 };
+
+type ChartFieldItemWithId = ChartFieldItemType & { id: number };
 
 const StyledColorPicker = styled.input`
   width: 30px;
@@ -23,31 +36,27 @@ const StyledColorPicker = styled.input`
   outline: none;
 `;
 
-const StyledRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 3fr 3fr 3fr 3fr 2fr 1fr;
-  gap: 5px;
-  align-items: end;
-  margin-bottom: 10px;
-`;
-
-const StyledDragIcon = styled.div`
-  cursor: move;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding-top: 20px;
-`;
-
-const StyledDraggableItem = styled.div<{ isDragging: boolean }>`
-  opacity: ${(props) => (props.isDragging ? 0.5 : 1)};
-  transition: opacity 0.2s ease;
-`;
-
 const DraggableList = ({ configName, defaultValues }: Props) => {
   const name = `${configName}.chartFields`;
   const formik = useFormikContext<Widget>();
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [isSortable, setIsSortable] = useState(false);
+
+  const chartFieldItems =
+    formik.values.config?.chartFields.map((item, index) => ({
+      ...item,
+      id: index,
+    })) || [];
+
+  const handleDragEnd = (event: DragEndEvent, move: ArrayHelpers['move']) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = chartFieldItems.findIndex(
+        (item) => item.id === active.id
+      );
+      const newIndex = chartFieldItems.findIndex((item) => item.id === over.id);
+      move(oldIndex, newIndex);
+    }
+  };
 
   const availableOptions = useMemo(() => {
     return defaultValues
@@ -60,81 +69,83 @@ const DraggableList = ({ configName, defaultValues }: Props) => {
         label: header,
       }));
   }, [defaultValues]);
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-    // Required for Firefox
-    e.dataTransfer.setData('text/plain', index.toString());
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (
-    e: React.DragEvent,
-    targetIndex: number,
-    move: (from: number, to: number) => void
-  ) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === targetIndex) return;
-
-    move(draggedIndex, targetIndex);
-    setDraggedIndex(null);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
 
   return (
     <FieldArray name={name}>
-      {({ remove, push, move }) => (
-        <div>
-          {formik.values.config?.chartFields?.map((item, index) => (
-            <StyledDraggableItem
-              key={item.key || index}
-              draggable
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, index, move)}
-              onDragEnd={handleDragEnd}
-              isDragging={draggedIndex === index}
-            >
-              <div className="flex items-center gap-4">
-                <StyledRow>
-                  <StyledDragIcon>
-                    <DragIcon />
-                  </StyledDragIcon>
+      {({ remove, push, move }) => {
+        const wrappedHandleDragEnd = (event: DragEndEvent) => {
+          handleDragEnd(event, move);
+        };
+        return (
+          <Spacings.Stack scale={'m'}>
+            <Spacings.Inline scale={'s'} justifyContent={'flex-end'}>
+              <FieldLabel title="Chart Fields" />
+              <SecondaryButton
+                label={'Reorder'}
+                iconLeft={<DragDropIcon />}
+                isToggleButton={true}
+                isToggled={isSortable}
+                onClick={() => setIsSortable(!isSortable)}
+              />
+            </Spacings.Inline>
+            <Table<ChartFieldItemWithId>
+              items={chartFieldItems}
+              columns={[
+                { key: 'key', label: 'Key' },
+                { key: 'label', label: 'Label' },
+                {
+                  key: 'type',
+                  label: 'Type',
+                },
+                { key: 'color', label: 'Color', width: '100px' },
+                { key: 'enabled', label: 'Enabled', width: '100px' },
+                { key: 'action', label: 'Action', width: '100px' },
+              ]}
+              itemRenderer={(row, columnKey, index) => {
+                switch (columnKey) {
+                  case 'key': {
+                    return (
+                      <Spacings.Inline scale={'l'}>
+                        {isSortable && <DragIcon size="medium" />}
+                        <TextField
+                          name={`${name}.${index}.key`}
+                          value={row.key}
+                          onChange={formik.handleChange}
+                          isDisabled
+                          title=""
+                          isCondensed
+                          placeholder="Key"
+                        />
+                      </Spacings.Inline>
+                    );
+                  }
+                  case 'label': {
+                    return (
+                      <TextField
+                        value={row.label}
+                        name={`${name}.${index}.label`}
+                        onChange={formik.handleChange}
+                        title=""
+                        isCondensed
+                        placeholder="Label"
+                      />
+                    );
+                  }
 
-                  <TextField
-                    name={`${name}.${index}.key`}
-                    value={item.key}
-                    onChange={formik.handleChange}
-                    isDisabled
-                    title="Key"
-                    isCondensed
-                    placeholder="Key"
-                  />
-                  <TextField
-                    value={item.label}
-                    name={`${name}.${index}.label`}
-                    onChange={formik.handleChange}
-                    title="Label"
-                    isCondensed
-                    placeholder="Label"
-                  />
-                  <TextField
-                    value={item.type}
-                    name={`${name}.${index}.type`}
-                    onChange={formik.handleChange}
-                    title="Type"
-                    isCondensed
-                    placeholder="Type"
-                  />
-                  {index !== 0 ? (
-                    <Spacings.Stack>
-                      <FieldLabel title="Color" />
+                  case 'type': {
+                    return (
+                      <TextField
+                        value={row.type}
+                        name={`${name}.${index}.type`}
+                        onChange={formik.handleChange}
+                        title=""
+                        isCondensed
+                        placeholder="Type"
+                      />
+                    );
+                  }
+                  case 'color': {
+                    return index !== 0 ? (
                       <StyledColorPicker
                         value={formik.values.config?.colors?.[index - 1]}
                         name={`${configName}.colors.${index - 1}`}
@@ -142,45 +153,79 @@ const DraggableList = ({ configName, defaultValues }: Props) => {
                         title="Color"
                         placeholder="Color"
                         type="color"
+                        disabled={isSortable}
                       />
-                    </Spacings.Stack>
-                  ) : (
-                    <div></div>
-                  )}
-                  <Spacings.Stack>
-                    <FieldLabel title="Enabled?" />
-                    <ToggleInput
-                      isChecked={item.enabled}
-                      name={`${name}.${index}.enabled`}
-                      onChange={formik.handleChange}
-                      size={'small'}
-                    />
-                  </Spacings.Stack>
-                  <IconButton
-                    label="Delete"
-                    onClick={() => remove(index)}
-                    icon={<BinLinearIcon />}
-                  />
-                </StyledRow>
-              </div>
-            </StyledDraggableItem>
-          ))}
-          <SelectField
-            onChange={(e) =>
-              push({
-                key: e.target.value,
-                label: e.target.value,
-                type: 'string',
-                enabled: true,
-              })
-            }
-            title="Add field"
-            options={availableOptions}
-          />
-        </div>
-      )}
+                    ) : (
+                      <></>
+                    );
+                  }
+                  case 'enabled': {
+                    return (
+                      <ToggleInput
+                        isChecked={row.enabled}
+                        name={`${name}.${index}.enabled`}
+                        onChange={formik.handleChange}
+                        size={'small'}
+                        isDisabled={isSortable}
+                      />
+                    );
+                  }
+                  case 'action': {
+                    return (
+                      <IconButton
+                        label="Delete"
+                        size={'30'}
+                        onClick={() => remove(index)}
+                        icon={<BinLinearIcon />}
+                        isDisabled={isSortable}
+                      />
+                    );
+                  }
+                }
+                return <></>;
+              }}
+              isSortable={isSortable}
+              handleDragEnd={wrappedHandleDragEnd}
+            />
+
+            <SelectField
+              onChange={(e) =>
+                push({
+                  key: e.target.value,
+                  label: e.target.value,
+                  type: 'string',
+                  enabled: true,
+                })
+              }
+              title="Add field"
+              options={availableOptions}
+            />
+          </Spacings.Stack>
+        );
+      }}
     </FieldArray>
   );
 };
+
+// const [items, setItems] = useState(['Item 1', 'Item 2', 'Item 3', 'Item 4']);
+//
+// const handleDragEnd = (event: any) => {
+//     const { active, over } = event;
+//     if (active.id !== over.id) {
+//         const oldIndex = items.indexOf(active.id);
+//         const newIndex = items.indexOf(over.id);
+//         setItems(arrayMove(items, oldIndex, newIndex));
+//     }
+// };
+//
+// return (
+//     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+//         <SortableContext items={items} strategy={verticalListSortingStrategy}>
+//             {items.map((id) => (
+//                 <SortableItem key={id} id={id} />
+//             ))}
+//         </SortableContext>
+//     </DndContext>
+// );
 
 export default DraggableList;

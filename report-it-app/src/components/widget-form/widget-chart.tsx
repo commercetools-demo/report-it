@@ -67,7 +67,7 @@ const WidgetChart = () => {
   }, [formik.values.config?.chartFields]);
 
   return (
-    <Spacings.Stack>
+    <Spacings.Stack scale={'l'}>
       <SelectField
         title="Chart Type"
         name="config.chartType"
@@ -86,11 +86,7 @@ const WidgetChart = () => {
         </Text.Caption>
       )}
       {!!headers?.length && (
-        <Spacings.Stack>
-          <FieldLabel title="Chart fields" />
-          {/* TODO: refresh chart when this changes */}
-          <ChartFields defaultValues={headers} configName="config" />
-        </Spacings.Stack>
+        <ChartFields defaultValues={headers} configName="config" />
       )}
       <StyledBorder />
       {!!chartData?.length && (
