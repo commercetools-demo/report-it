@@ -14,10 +14,10 @@ const StyledWrapper = styled.div<{ $hasWidgets?: boolean }>`
   flex: 1;
   min-width: 400px;
   @media (min-width: 768px) {
-    min-width: 990px;
+    min-width: 768px;
   }
   @media (min-width: 1024px) {
-    min-width: 1280px;
+    min-width: 1024px;
   }
   ${(props) => (props.$hasWidgets ? '' : 'height: 160px;')}
 `;
@@ -70,7 +70,7 @@ const DashboardGrid = () => {
   }, [widgets]);
 
   return (
-    <StyledWrapper $hasWidgets={!!widgets?.length}>
+    <StyledWrapper $hasWidgets={!!widgets?.length} data-test="test">
       {isLoading && (
         <div>
           <LoadingSpinner />

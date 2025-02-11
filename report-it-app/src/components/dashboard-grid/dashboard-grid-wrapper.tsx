@@ -77,7 +77,7 @@ const DashboardGridWrapper = () => {
 
   return (
     <>
-      <Constraints.Horizontal max={'scale'}>
+      <Constraints.Horizontal max={'auto'}>
         <Spacings.Inline alignItems={'flex-start'}>
           <DashboardGrid />
           <Spacings.Stack scale={'s'}>
