@@ -1,4 +1,4 @@
-import React, { type ChangeEventHandler, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { DragIcon, BinLinearIcon } from '@commercetools-uikit/icons';
 import TextField from '@commercetools-uikit/text-field';
@@ -7,12 +7,10 @@ import FieldLabel from '@commercetools-uikit/field-label';
 import IconButton from '@commercetools-uikit/icon-button';
 import SelectField from '@commercetools-uikit/select-field';
 import { Widget } from '../../types/widget';
-import { FieldArray } from 'formik';
+import { FieldArray, useFormikContext } from 'formik';
 import Spacings from '@commercetools-uikit/spacings';
 
 type Props = {
-  onChange: ChangeEventHandler<HTMLInputElement>;
-  config?: Widget['config'];
   configName: string;
   defaultValues: string[];
 };
@@ -46,18 +44,17 @@ const StyledDraggableItem = styled.div<{ isDragging: boolean }>`
   transition: opacity 0.2s ease;
 `;
 
-const DraggableList = ({
-  onChange,
-  config,
-  configName,
-  defaultValues,
-}: Props) => {
+const DraggableList = ({ configName, defaultValues }: Props) => {
   const name = `${configName}.chartFields`;
+  const formik = useFormikContext<Widget>();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const availableOptions = useMemo(() => {
     return defaultValues
-      ?.filter((header) => !config?.chartFields?.find((h) => h.key === header))
+      ?.filter(
+        (header) =>
+          !formik.values.config?.chartFields?.find((h) => h.key === header)
+      )
       .map((header) => ({
         value: header,
         label: header,
@@ -94,7 +91,7 @@ const DraggableList = ({
     <FieldArray name={name}>
       {({ remove, push, move }) => (
         <div>
-          {config?.chartFields?.map((item, index) => (
+          {formik.values.config?.chartFields?.map((item, index) => (
             <StyledDraggableItem
               key={item.key || index}
               draggable
@@ -113,7 +110,7 @@ const DraggableList = ({
                   <TextField
                     name={`${name}.${index}.key`}
                     value={item.key}
-                    onChange={onChange}
+                    onChange={formik.handleChange}
                     isDisabled
                     title="Key"
                     isCondensed
@@ -122,7 +119,7 @@ const DraggableList = ({
                   <TextField
                     value={item.label}
                     name={`${name}.${index}.label`}
-                    onChange={onChange}
+                    onChange={formik.handleChange}
                     title="Label"
                     isCondensed
                     placeholder="Label"
@@ -130,7 +127,7 @@ const DraggableList = ({
                   <TextField
                     value={item.type}
                     name={`${name}.${index}.type`}
-                    onChange={onChange}
+                    onChange={formik.handleChange}
                     title="Type"
                     isCondensed
                     placeholder="Type"
@@ -139,9 +136,9 @@ const DraggableList = ({
                     <Spacings.Stack>
                       <FieldLabel title="Color" />
                       <StyledColorPicker
-                        value={config.colors?.[index - 1]}
+                        value={formik.values.config?.colors?.[index - 1]}
                         name={`${configName}.colors.${index - 1}`}
-                        onChange={onChange}
+                        onChange={formik.handleChange}
                         title="Color"
                         placeholder="Color"
                         type="color"
@@ -155,7 +152,7 @@ const DraggableList = ({
                     <ToggleInput
                       isChecked={item.enabled}
                       name={`${name}.${index}.enabled`}
-                      onChange={onChange}
+                      onChange={formik.handleChange}
                       size={'small'}
                     />
                   </Spacings.Stack>

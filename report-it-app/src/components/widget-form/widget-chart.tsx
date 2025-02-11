@@ -89,12 +89,7 @@ const WidgetChart = () => {
         <Spacings.Stack>
           <FieldLabel title="Chart fields" />
           {/* TODO: refresh chart when this changes */}
-          <ChartFields
-            defaultValues={headers}
-            config={formik.values?.config}
-            configName="config"
-            onChange={formik.handleChange}
-          />
+          <ChartFields defaultValues={headers} configName="config" />
         </Spacings.Stack>
       )}
       <StyledBorder />
