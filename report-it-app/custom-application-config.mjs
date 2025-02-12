@@ -53,7 +53,7 @@ const config = {
       'img-src': ['https://www.gstatic.com'],
     },
   },
-  icon: '${path:@commercetools-frontend/assets/application-icons/rocket.svg}',
+  icon: '${path:@commercetools-frontend/assets/application-icons/screen.svg}',
   mainMenuLink: {
     defaultLabel: 'Report It',
     labelAllLocales: [],
