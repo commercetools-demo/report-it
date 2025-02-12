@@ -43,7 +43,7 @@ export interface Widget {
 
 export interface WidgetRef {
   key: string;
-  typeId: 'custom-object';
+  typeId: 'key-value-document';
 }
 
 export interface WidgetResponse {

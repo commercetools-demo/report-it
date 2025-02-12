@@ -63,7 +63,7 @@ export const DashboardPanelProvider = ({
       ...(dashboard.value.widgets || []),
       {
         key: result.key,
-        typeId: 'custom-object',
+        typeId: 'key-value-document',
       },
     ]);
     return result;
@@ -127,7 +127,7 @@ export const DashboardPanelProvider = ({
           config: {
             ...json.widget.value.config,
             datasources: json.widget.value.config.datasources.map((d) => ({
-              typeId: 'custom-object',
+              typeId: 'key-value-document',
               key: datasourceMap[d.key],
             })),
           },

@@ -77,7 +77,7 @@ export type Wrapper = (
 
 export type DatasourceRef = {
   key: string;
-  typeId: 'custom-object';
+  typeId: 'key-value-document';
   obj?: {
     value: {
       id: string;

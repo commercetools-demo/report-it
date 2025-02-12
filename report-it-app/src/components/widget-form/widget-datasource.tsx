@@ -17,7 +17,7 @@ const WidgetDatasource = ({ widget }: Props) => {
             name: 'config.datasources',
             value: keys.map((key: string) => ({
               key,
-              typeId: 'custom-object',
+              typeId: 'key-value-document',
             })),
           },
         });
