@@ -6,20 +6,14 @@ deployAs:
         - key: CUSTOM_APPLICATION_ID
           description: The Custom Application ID
           required: true
-        - key: APPLICATION_URL
-          description: The Custom Application URL
-          required: true
         - key: ENTRY_POINT_URI_PATH
           description: The Application entry point URI path
-          default: custom-object-editor
           required: true
-        - key: INITIAL_PROJECT_KEY
-          description: development project key
-          required: true
+          default: 'report-it'
         - key: CLOUD_IDENTIFIER
           description: one of the following gcp-us, gcp-eu, aws-us, aws-eu
-          default: gcp-us
-          required: false
+          required: true
+          default: 'gcp-us'
       securedConfiguration: []
   - name: csv-exporter
     applicationType: job
