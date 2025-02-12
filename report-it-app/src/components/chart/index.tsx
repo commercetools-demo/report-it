@@ -5,7 +5,6 @@ import {
   GoogleChartWrapperChartType,
 } from 'react-google-charts';
 import styled from 'styled-components';
-import { useQueryUtils } from '../../hooks/use-query-utils';
 import { useWidgetDatasourceResponseContext } from '../../providers/widget-datasource-response-provider';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { ChartFieldItem } from '../../types/widget';
@@ -51,11 +50,13 @@ const Chart = ({
 
   return (
     <StyledDiv>
+      <Text.Subheadline as={'h5'} tone={'secondary'}>
+        {name}
+      </Text.Subheadline>
       <GoogleChart
         chartType={chartType as GoogleChartWrapperChartType}
         data={chartData}
         options={{
-          title: name,
           colors: colors,
         }}
         legendToggle
