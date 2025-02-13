@@ -39,7 +39,7 @@ const StyledWidgetFrame = styled.div`
 `;
 
 const DashboardGrid = () => {
-  const { isLoading, widgets, updateWidget, refresh } =
+  const { isLoading, widgets, updateLayoutsAndRefresh } =
     useDashboardPanelStateContext();
   const { push } = useHistory();
   const match = useRouteMatch();
@@ -47,14 +47,17 @@ const DashboardGrid = () => {
   const onLayoutChange = useCallback(
     async (newWidgets: WidgetLayout[]) => {
       const newWidgetArr = widgets ? [...widgets] : [];
+      const updates = [];
       for (const widget of newWidgetArr) {
         const found = newWidgets.find((item) => item.i === widget.key);
         if (!!found && widget.value) {
-          await updateWidget(widget.key, { ...widget.value, layout: found });
-          await refresh();
+          updates.push({
+            widgetKey: widget.key,
+            layout: found,
+          });
         }
       }
-      //   setWidgets?.(newWidgetArr);
+      await updateLayoutsAndRefresh(updates);
     },
     [widgets]
   );

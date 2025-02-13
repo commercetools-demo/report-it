@@ -206,6 +206,18 @@ export const useWidget = () => {
     return result;
   };
 
+  const isLayoutChanged = (
+    oldLayout: Widget['layout'],
+    newLayout: Widget['layout']
+  ) => {
+    return (
+      oldLayout.x !== newLayout.x ||
+      oldLayout.y !== newLayout.y ||
+      oldLayout.w !== newLayout.w ||
+      oldLayout.h !== newLayout.h
+    );
+  };
+
   return {
     createWidget,
     deleteWidget,
@@ -214,5 +226,6 @@ export const useWidget = () => {
     exportWidget,
     updateWidget,
     getWidgetsWithDatasource,
+    isLayoutChanged,
   };
 };

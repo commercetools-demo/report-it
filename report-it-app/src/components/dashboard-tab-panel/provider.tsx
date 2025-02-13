@@ -25,8 +25,10 @@ interface ContextShape {
   importWidget: (json: ExportableWidget) => Promise<boolean>;
   refresh: () => Promise<void>;
   findWidget: (widgetKey?: string | null) => WidgetResponse | null;
+  updateLayoutsAndRefresh: (
+    updates: { widgetKey: string; layout?: Widget['layout'] }[]
+  ) => Promise<void>;
 }
-
 const DashboardPanelStateContext: Context<ContextShape> =
   createContext<ContextShape>({
     widgets: [],
@@ -38,6 +40,7 @@ const DashboardPanelStateContext: Context<ContextShape> =
     importWidget: () => Promise.resolve(false),
     refresh: () => Promise.resolve(),
     findWidget: () => null,
+    updateLayoutsAndRefresh: () => Promise.resolve(),
   });
 
 export const DashboardPanelProvider = ({
@@ -48,8 +51,14 @@ export const DashboardPanelProvider = ({
   const [isLoading, setIsLoading] = useState(false);
   const { updateDashboard } = useDashboard();
   const { createDatasource } = useDatasource();
-  const { createWidget, updateWidget, deleteWidget, getWidgets, exportWidget } =
-    useWidget();
+  const {
+    createWidget,
+    updateWidget,
+    deleteWidget,
+    getWidgets,
+    exportWidget,
+    isLayoutChanged,
+  } = useWidget();
 
   const addWidget = async (
     widget?: Widget
@@ -91,6 +100,37 @@ export const DashboardPanelProvider = ({
       return;
     }
     return updateWidget(widgetKey, widget);
+  };
+
+  const updateLayoutsAndRefresh = async (
+    updates: { widgetKey: string; layout?: Widget['layout'] }[]
+  ): Promise<void> => {
+    const updatedWidgets: Pick<WidgetResponse, 'key' | 'value'>[] = [];
+
+    for (const update of updates) {
+      const widget = findWidget(update.widgetKey);
+      if (!widget?.value || !update.layout) {
+        continue;
+      }
+      if (isLayoutChanged(widget.value.layout, update.layout)) {
+        updatedWidgets.push({
+          key: update.widgetKey,
+          value: {
+            ...widget.value,
+            layout: update.layout,
+          },
+        });
+      }
+    }
+    if (updatedWidgets.length > 0) {
+      await Promise.all(
+        updatedWidgets.map(async (update) => {
+          await updateWidget(update.key, update.value);
+        })
+      );
+
+      await fetchWidgets();
+    }
   };
 
   const fetchWidgets = async (): Promise<void> => {
@@ -154,6 +194,7 @@ export const DashboardPanelProvider = ({
         updateWidget: update,
         refresh: fetchWidgets,
         removeWidget,
+        updateLayoutsAndRefresh,
         isLoading,
       }}
     >
